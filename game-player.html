@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jugar — MonkeyMoney</title>
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .player-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0;
+  }
+  .player-bar h1 { font-size: 1.3rem; color: var(--ink); margin: 0; }
+  iframe.game-iframe {
+    width: 100%;
+    height: 75vh;
+    min-height: 480px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    background: var(--void);
+  }
+  .player-missing {
+    background: var(--surface);
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body data-root="">
+
+<header class="site-header">
+  <div class="nav-inner wrap">
+    <a href="index.html" class="logo">
+      <img src="assets/mascot-face.png" class="logo-mark" alt="MonkeyMoney">
+      <span class="logo-text">MonkeyMoney</span>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html" data-i18n="nav.home">Inicio</a>
+      <a href="juegos.html" data-i18n="nav.games" aria-current="page">Juegos</a>
+      <a href="biblioteca.html" data-i18n="nav.library">Biblioteca</a>
+      <a href="comunidad.html" data-i18n="nav.community">Comunidad</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button class="lang-btn" data-lang="es" aria-pressed="true">ES</button>
+        <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="menu-toggle" aria-label="Menú" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div class="player-bar">
+    <h1 id="game-title">Juego</h1>
+    <a href="juegos.html" class="btn btn-secondary" data-i18n="player.back">← Volver a juegos</a>
+  </div>
+  <div id="player-slot"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-copy">© <span id="year"></span> Beken Bauher Marin — MonkeyMoney. <span data-i18n="footer.rights">Todos los derechos reservados.</span></div>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const file = params.get("file");
+  const title = params.get("title") || "Juego";
+  document.getElementById("game-title").textContent = title;
+  document.title = `${title} — MonkeyMoney`;
+
+  const slot = document.getElementById("player-slot");
+  if (file) {
+    const iframe = document.createElement("iframe");
+    iframe.className = "game-iframe";
+    iframe.src = `games/${file}`;
+    iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms");
+    iframe.setAttribute("title", title);
+    slot.appendChild(iframe);
+  } else {
+    const div = document.createElement("div");
+    div.className = "player-missing";
+    div.textContent = "No se encontró el archivo de este juego.";
+    slot.appendChild(div);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MonkeyMoney — Educación financiera para jugar, leer y conversar</title>
+<meta name="description" content="Juegos de finanzas personales y empresariales, libros de Beken Bauher Marin y una comunidad para aprender a manejar el dinero.">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root="">
+
+<header class="site-header">
+  <div class="nav-inner wrap">
+    <a href="index.html" class="logo">
+      <img src="assets/mascot-face.png" class="logo-mark" alt="MonkeyMoney">
+      <span class="logo-text">MonkeyMoney</span>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html" data-i18n="nav.home" aria-current="page">Inicio</a>
+      <a href="juegos.html" data-i18n="nav.games">Juegos</a>
+      <a href="biblioteca.html" data-i18n="nav.library">Biblioteca</a>
+      <a href="comunidad.html" data-i18n="nav.community">Comunidad</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button class="lang-btn" data-lang="es" aria-pressed="true">ES</button>
+        <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="menu-toggle" aria-label="Menú" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow" data-i18n="hero.eyebrow">Educación financiera en español</span>
+        <h1>
+          <span data-i18n="hero.title.part1">Aprende finanzas</span>
+          <em data-i18n="hero.title.em">jugando</em>,
+          <span data-i18n="hero.title.part2">no memorizando.</span>
+        </h1>
+        <p class="lead" data-i18n="hero.lead">MonkeyMoney es un espacio para entender tu dinero —personal y de negocio— a través de juegos, libros y una comunidad que también está aprendiendo.</p>
+        <div class="cta-row">
+          <a href="juegos.html" class="btn btn-primary" data-i18n="hero.cta.play">Jugar ahora</a>
+          <a href="biblioteca.html" class="btn btn-secondary" data-i18n="hero.cta.read">Ver la biblioteca</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <span class="sticker sticker-1" data-i18n="hero.sticker1">100% gratis</span>
+        <span class="sticker sticker-2" data-i18n="hero.sticker2">0% aburrido</span>
+        <img src="assets/mascot-hero.png" alt="MonkeyMoney mascota" class="mascot-hero-img">
+        <div class="statement">
+        <div class="statement-title" data-i18n="hero.statement.title">Balance de hoy</div>
+        <div class="statement-row">
+          <span data-i18n="hero.statement.games">Juegos disponibles</span>
+          <span class="amount" id="stat-games">—</span>
+        </div>
+        <div class="statement-row">
+          <span data-i18n="hero.statement.books">Libros publicados</span>
+          <span class="amount" id="stat-books">—</span>
+        </div>
+        <div class="statement-row">
+          <span data-i18n="hero.statement.cost">Costo para ti</span>
+          <span class="amount" data-i18n="hero.statement.cost.value">$0</span>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hairline wrap">
+
+  <section class="section wrap">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="pillars.eyebrow">Tres formas de aprender</span>
+      <h2 data-i18n="pillars.title">Todo en un solo lugar</h2>
+      <p data-i18n="pillars.lead">No hace falta descargar nada ni crear hojas de cálculo. Todo se juega y se lee directamente aquí.</p>
+    </div>
+    <div class="pillars">
+      <a href="juegos.html" class="pillar-card">
+        <span class="pillar-icon" data-i18n="pillars.games.tag">PRACTICAR</span>
+        <h3 data-i18n="pillars.games.title">Juegos financieros</h3>
+        <p data-i18n="pillars.games.desc">Simuladores cortos de presupuesto, deudas e inversión para personas y negocios.</p>
+        <span class="go" data-i18n="pillars.games.go">Ir a jugar →</span>
+      </a>
+      <a href="biblioteca.html" class="pillar-card">
+        <span class="pillar-icon" data-i18n="pillars.library.tag">LEER</span>
+        <h3 data-i18n="pillars.library.title">Biblioteca</h3>
+        <p data-i18n="pillars.library.desc">Libros y artículos escritos por Beken Bauher Marin, disponibles solo para lectura en línea.</p>
+        <span class="go" data-i18n="pillars.library.go">Abrir biblioteca →</span>
+      </a>
+      <a href="comunidad.html" class="pillar-card">
+        <span class="pillar-icon" data-i18n="pillars.community.tag">CONVERSAR</span>
+        <h3 data-i18n="pillars.community.title">Comunidad</h3>
+        <p data-i18n="pillars.community.desc">Comenta, pregunta y comparte tu progreso con otros seguidores de MonkeyMoney.</p>
+        <span class="go" data-i18n="pillars.community.go">Unirme a la conversación →</span>
+      </a>
+    </div>
+  </section>
+
+  <hr class="hairline wrap">
+
+  <section class="section wrap">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="about.eyebrow">Por qué existe MonkeyMoney</span>
+      <h2 data-i18n="about.title">El dinero se entiende mejor cuando se practica</h2>
+    </div>
+    <p data-i18n="about.body1" style="max-width:68ch;color:var(--ink-soft)">La mayoría de los cursos de finanzas explican teoría y esperan que la apliques sola o solo, sin un lugar seguro para equivocarte. Aquí puedes tomar decisiones de presupuesto, deuda e inversión dentro de un juego, ver el resultado y volver a intentarlo cuantas veces quieras.</p>
+    <p data-i18n="about.body2" style="max-width:68ch;color:var(--ink-soft)">Todo el contenido —juegos y libros— es gratuito y queda dentro de la página. No se descarga ni se reenvía: se juega y se lee aquí, y se discute en la comunidad.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        <div class="logo-text" style="font-size:1.1rem">MonkeyMoney</div>
+        <p data-i18n="footer.tagline" style="max-width:32ch;opacity:0.85;margin-top:6px">Educación financiera para jugar, leer y conversar.</p>
+      </div>
+      <nav style="display:flex;gap:18px;flex-wrap:wrap">
+        <a href="juegos.html" data-i18n="nav.games">Juegos</a>
+        <a href="biblioteca.html" data-i18n="nav.library">Biblioteca</a>
+        <a href="comunidad.html" data-i18n="nav.community">Comunidad</a>
+      </nav>
+    </div>
+    <div class="footer-copy">© <span id="year"></span> Beken Bauher Marin — MonkeyMoney. <span data-i18n="footer.rights">Todos los derechos reservados.</span></div>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="js/home-stats.js"></script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel — MonkeyMoney</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body { background: var(--void); }
+  .gate-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .gate-box {
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 36px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+  .gate-box h1 { color: var(--ink); font-size: 1.4rem; }
+  .gate-box input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    margin: 14px 0;
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .gate-note {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    line-height: 1.5;
+  }
+  #admin-app { display: none; background: var(--void); min-height: 100vh; }
+  .admin-header {
+    background: var(--surface);
+    color: var(--ink);
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .admin-header .wrap { display: flex; justify-content: space-between; align-items: center; }
+  .admin-header h1 { font-size: 1.2rem; margin: 0; color: var(--ink); }
+  .tabs { display: flex; gap: 10px; margin: 28px 0 22px; }
+  .tab-btn {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    padding: 9px 18px;
+    border: 1.5px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .tab-btn.active { background: var(--acid); color: var(--void); border-color: var(--acid); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .admin-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 900px) { .admin-grid { grid-template-columns: 1fr; } }
+
+  table.catalog-table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--line-strong); color: var(--ink); }
+  table.catalog-table th, table.catalog-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 0.86rem; }
+  table.catalog-table th { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; color: var(--ink-soft); }
+  table.catalog-table .file-cell { font-family: var(--font-mono); font-size: 0.78rem; color: var(--gold); }
+  .del-btn { background: none; border: 1px solid var(--pulse); color: var(--pulse); border-radius: var(--radius-sm); padding: 4px 10px; font-size: 0.78rem; cursor: pointer; }
+  .del-btn:hover { background: var(--pulse); color: var(--void); }
+
+  .admin-form { background: var(--surface); border: 1px solid var(--line-strong); padding: 22px; border-radius: var(--radius); }
+  .admin-form h3 { color: var(--ink); margin-top: 0; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--ink-soft); }
+  .field input[type="text"], .field textarea, .field select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    background: var(--surface-2);
+    color: var(--ink);
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .hint { font-size: 0.74rem; color: var(--ink-soft); margin-top: 3px; }
+  .submit-btn {
+    margin-top: 6px;
+    background: var(--acid);
+    color: var(--void);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 100px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .download-box { margin-top: 20px; padding: 16px; border: 1px dashed var(--gold); border-radius: var(--radius-sm); background: var(--surface); }
+  .download-btn {
+    background: var(--gold);
+    color: var(--void);
+    border: none;
+    padding: 9px 16px;
+    border-radius: 100px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .steps { font-size: 0.84rem; color: var(--ink-soft); }
+  .steps li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+
+<div class="gate-screen" id="gate-screen">
+  <div class="gate-box">
+    <h1>Panel MonkeyMoney</h1>
+    <p style="color:var(--ink-soft);font-size:0.9rem">Esta clave es solo para que visitantes casuales no entren por error. No protege tu repositorio de GitHub: este panel no se conecta a GitHub ni publica nada por sí mismo.</p>
+    <input type="password" id="gate-input" placeholder="Clave de acceso">
+    <button class="submit-btn" id="gate-submit" style="width:100%">Entrar</button>
+    <p id="gate-error" style="color:var(--wax-red);font-size:0.85rem;display:none">Clave incorrecta.</p>
+    <p class="gate-note">¿Primera vez? La clave por defecto es <strong>monkeymoney</strong>. Cámbiala editando la constante <code>ADMIN_PASSPHRASE</code> al final de este archivo (admin.html) antes de subirlo a tu repositorio público.</p>
+  </div>
+</div>
+
+<div id="admin-app">
+  <header class="admin-header">
+    <div class="wrap">
+      <h1>Panel de organización — MonkeyMoney</h1>
+      <a href="index.html" style="color:var(--parchment-card);text-decoration:none;font-size:0.85rem">← Volver al sitio</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <p style="max-width:70ch;color:var(--ink-soft);margin-top:24px">
+      Este panel <strong>no sube nada a GitHub automáticamente</strong>. Te ayuda a organizar
+      el catálogo; al final descargas un archivo <code>.json</code> actualizado que tú mismo
+      subes a tu repositorio, junto con el archivo real del juego o del PDF.
+    </p>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="games">Juegos</button>
+      <button class="tab-btn" data-tab="library">Biblioteca</button>
+    </div>
+
+    <!-- ============ JUEGOS ============ -->
+    <div class="tab-panel active" id="panel-games">
+      <div class="admin-grid">
+        <div>
+          <h3 style="color:var(--ink)">Catálogo actual</h3>
+          <table class="catalog-table" id="games-table">
+            <thead><tr><th>Estado</th><th>Título</th><th>Categoría</th><th>Archivo</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <div class="download-box">
+            <p style="margin-top:0;font-size:0.85rem">Cuando termines de agregar o quitar juegos:</p>
+            <button class="download-btn" id="download-games">⬇ Descargar games.json actualizado</button>
+          </div>
+        </div>
+
+        <div class="admin-form">
+          <h3>+ Agregar juego</h3>
+          <div class="field">
+            <label>Archivo del juego (.html)</label>
+            <input type="file" id="game-file-picker" accept=".html">
+            <p class="hint">Solo se lee el nombre del archivo; tú lo colocas luego en la carpeta <code>games/</code>.</p>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Título (ES)</label><input type="text" id="game-title-es"></div>
+            <div class="field"><label>Title (EN)</label><input type="text" id="game-title-en"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Descripción (ES)</label><textarea id="game-desc-es" rows="3"></textarea></div>
+            <div class="field"><label>Description (EN)</label><textarea id="game-desc-en" rows="3"></textarea></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Categoría (ES)</label><input type="text" id="game-cat-es" placeholder="Finanzas personales"></div>
+            <div class="field"><label>Category (EN)</label><input type="text" id="game-cat-en" placeholder="Personal finance"></div>
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="game-status">
+              <option value="disponible">Disponible</option>
+              <option value="proximamente">Próximamente</option>
+            </select>
+          </div>
+          <button class="submit-btn" id="add-game">Agregar a la lista</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ BIBLIOTECA ============ -->
+    <div class="tab-panel" id="panel-library">
+      <div class="admin-grid">
+        <div>
+          <h3 style="color:var(--ink)">Catálogo actual</h3>
+          <table class="catalog-table" id="library-table">
+            <thead><tr><th>Estado</th><th>Título</th><th>Tipo</th><th>Archivo</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+
+          <div class="download-box">
+            <p style="margin-top:0;font-size:0.85rem">Cuando termines de agregar o quitar libros:</p>
+            <button class="download-btn" id="download-library">⬇ Descargar library.json actualizado</button>
+          </div>
+        </div>
+
+        <div class="admin-form">
+          <h3>+ Agregar libro / guía / artículo</h3>
+          <div class="field">
+            <label>Archivo (.pdf)</label>
+            <input type="file" id="lib-file-picker" accept=".pdf">
+            <p class="hint">Solo se lee el nombre del archivo; tú lo colocas luego en <code>library/pdfs/</code>.</p>
+            <p class="hint" id="lib-size-warning" style="display:none;color:var(--wax-red)"></p>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Título (ES)</label><input type="text" id="lib-title-es"></div>
+            <div class="field"><label>Title (EN)</label><input type="text" id="lib-title-en"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Descripción (ES)</label><textarea id="lib-desc-es" rows="3"></textarea></div>
+            <div class="field"><label>Description (EN)</label><textarea id="lib-desc-en" rows="3"></textarea></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Tipo (ES)</label><input type="text" id="lib-type-es" placeholder="Libro / Guía / Artículo"></div>
+            <div class="field"><label>Type (EN)</label><input type="text" id="lib-type-en" placeholder="Book / Guide / Article"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Categoría (ES)</label><input type="text" id="lib-cat-es" placeholder="Finanzas personales"></div>
+            <div class="field"><label>Category (EN)</label><input type="text" id="lib-cat-en" placeholder="Personal finance"></div>
+          </div>
+          <div class="field">
+            <label>Estado</label>
+            <select id="lib-status">
+              <option value="disponible">Disponible</option>
+              <option value="proximamente">Próximamente</option>
+            </select>
+          </div>
+          <button class="submit-btn" id="add-lib">Agregar a la lista</button>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hairline" style="margin:40px 0">
+    <h3 style="color:var(--ink)">Cómo publicar los cambios</h3>
+    <ol class="steps">
+      <li>Agrega o quita juegos/libros aquí hasta que la lista quede como quieres.</li>
+      <li>Descarga el <code>games.json</code> y/o <code>library.json</code> actualizado.</li>
+      <li>Reemplaza esos archivos dentro de la carpeta <code>data/</code> de tu repositorio.</li>
+      <li>Coloca el archivo real (<code>.html</code> del juego o <code>.pdf</code> del libro) en <code>games/</code> o <code>library/pdfs/</code> — con el mismo nombre que aparece en la columna "Archivo".</li>
+      <li>Para quitar algo: borra la fila aquí, descarga el archivo de nuevo, reemplázalo en <code>data/</code>, y borra el archivo real de su carpeta.</li>
+      <li>Sube los cambios a GitHub (commit + push). La página se actualiza solita.</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+  // =====================================================================
+  // Cambia esta clave antes de subir el sitio. Esto NO es seguridad real
+  // (cualquiera que vea el código fuente puede leerla); solo evita que
+  // un visitante casual entre por accidente a este panel.
+  // =====================================================================
+  const ADMIN_PASSPHRASE = "monkeymoney";
+
+  document.getElementById("gate-submit").addEventListener("click", checkGate);
+  document.getElementById("gate-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") checkGate();
+  });
+  function checkGate() {
+    const val = document.getElementById("gate-input").value;
+    if (val === ADMIN_PASSPHRASE) {
+      document.getElementById("gate-screen").style.display = "none";
+      document.getElementById("admin-app").style.display = "block";
+      initAdmin();
+    } else {
+      document.getElementById("gate-error").style.display = "block";
+    }
+  }
+
+  function initAdmin() {
+    // ---------- Tabs ----------
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.add("active");
+      });
+    });
+
+    let games = [];
+    let library = [];
+
+    function slugify(text) {
+      return text
+        .toString()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
+    }
+
+    // ---------- Render tables ----------
+    function renderGames() {
+      const tbody = document.querySelector("#games-table tbody");
+      tbody.innerHTML = games.map((g, i) => `
+        <tr>
+          <td>${g.status === "disponible" ? "✅ Disponible" : "⏳ Próximamente"}</td>
+          <td>${g.title_es || "(sin título)"}</td>
+          <td>${g.category || ""}</td>
+          <td class="file-cell">${g.file || "—"}</td>
+          <td><button class="del-btn" data-i="${i}">Eliminar</button></td>
+        </tr>`).join("") || `<tr><td colspan="5" style="color:var(--ink-soft)">Sin juegos todavía.</td></tr>`;
+      tbody.querySelectorAll(".del-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          games.splice(Number(btn.dataset.i), 1);
+          renderGames();
+        });
+      });
+    }
+
+    function renderLibrary() {
+      const tbody = document.querySelector("#library-table tbody");
+      tbody.innerHTML = library.map((b, i) => `
+        <tr>
+          <td>${b.status === "disponible" ? "✅ Disponible" : "⏳ Próximamente"}</td>
+          <td>${b.title_es || "(sin título)"}</td>
+          <td>${b.type || ""}</td>
+          <td class="file-cell">${b.file || "—"}</td>
+          <td><button class="del-btn" data-i="${i}">Eliminar</button></td>
+        </tr>`).join("") || `<tr><td colspan="5" style="color:var(--ink-soft)">Sin libros todavía.</td></tr>`;
+      tbody.querySelectorAll(".del-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          library.splice(Number(btn.dataset.i), 1);
+          renderLibrary();
+        });
+      });
+    }
+
+    // ---------- Load existing catalogs ----------
+    fetch("data/games.json").then((r) => r.json()).then((d) => { games = d; renderGames(); }).catch(() => renderGames());
+    fetch("data/library.json").then((r) => r.json()).then((d) => { library = d; renderLibrary(); }).catch(() => renderLibrary());
+
+    // ---------- Add game ----------
+    let pickedGameFile = "";
+    document.getElementById("game-file-picker").addEventListener("change", (e) => {
+      pickedGameFile = e.target.files[0] ? e.target.files[0].name : "";
+    });
+    document.getElementById("add-game").addEventListener("click", () => {
+      const titleEs = document.getElementById("game-title-es").value.trim();
+      if (!titleEs) { alert("Escribe al menos el título en español."); return; }
+      games.push({
+        id: slugify(titleEs),
+        file: pickedGameFile,
+        status: document.getElementById("game-status").value,
+        category: document.getElementById("game-cat-es").value.trim(),
+        category_en: document.getElementById("game-cat-en").value.trim(),
+        title_es: titleEs,
+        title_en: document.getElementById("game-title-en").value.trim(),
+        desc_es: document.getElementById("game-desc-es").value.trim(),
+        desc_en: document.getElementById("game-desc-en").value.trim(),
+      });
+      renderGames();
+      ["game-title-es","game-title-en","game-desc-es","game-desc-en","game-cat-es","game-cat-en"]
+        .forEach((id) => document.getElementById(id).value = "");
+      document.getElementById("game-file-picker").value = "";
+      pickedGameFile = "";
+    });
+
+    // ---------- Add library item ----------
+    let pickedLibFile = "";
+    document.getElementById("lib-file-picker").addEventListener("change", (e) => {
+      const f = e.target.files[0];
+      pickedLibFile = f ? f.name : "";
+      const warn = document.getElementById("lib-size-warning");
+      if (f && f.size > 5 * 1024 * 1024) {
+        warn.style.display = "block";
+        warn.textContent = `Este archivo pesa ${(f.size / (1024*1024)).toFixed(1)} MB. Puede tardar en cargar para tus lectores.`;
+      } else {
+        warn.style.display = "none";
+      }
+    });
+    document.getElementById("add-lib").addEventListener("click", () => {
+      const titleEs = document.getElementById("lib-title-es").value.trim();
+      if (!titleEs) { alert("Escribe al menos el título en español."); return; }
+      library.push({
+        id: slugify(titleEs),
+        file: pickedLibFile,
+        status: document.getElementById("lib-status").value,
+        type: document.getElementById("lib-type-es").value.trim(),
+        type_en: document.getElementById("lib-type-en").value.trim(),
+        category: document.getElementById("lib-cat-es").value.trim(),
+        category_en: document.getElementById("lib-cat-en").value.trim(),
+        title_es: titleEs,
+        title_en: document.getElementById("lib-title-en").value.trim(),
+        desc_es: document.getElementById("lib-desc-es").value.trim(),
+        desc_en: document.getElementById("lib-desc-en").value.trim(),
+      });
+      renderLibrary();
+      ["lib-title-es","lib-title-en","lib-desc-es","lib-desc-en","lib-type-es","lib-type-en","lib-cat-es","lib-cat-en"]
+        .forEach((id) => document.getElementById(id).value = "");
+      document.getElementById("lib-file-picker").value = "";
+      pickedLibFile = "";
+    });
+
+    // ---------- Downloads ----------
+    function download(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+    document.getElementById("download-games").addEventListener("click", () => download("games.json", games));
+    document.getElementById("download-library").addEventListener("click", () => download("library.json", library));
+  }
+</script>
+</body>
+</html>

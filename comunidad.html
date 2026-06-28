@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comunidad — MonkeyMoney</title>
+<meta name="description" content="Comenta y conversa con la comunidad de MonkeyMoney sobre finanzas personales y empresariales.">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root="">
+
+<header class="site-header">
+  <div class="nav-inner wrap">
+    <a href="index.html" class="logo">
+      <img src="assets/mascot-face.png" class="logo-mark" alt="MonkeyMoney">
+      <span class="logo-text">MonkeyMoney</span>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html" data-i18n="nav.home">Inicio</a>
+      <a href="juegos.html" data-i18n="nav.games">Juegos</a>
+      <a href="biblioteca.html" data-i18n="nav.library">Biblioteca</a>
+      <a href="comunidad.html" data-i18n="nav.community" aria-current="page">Comunidad</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button class="lang-btn" data-lang="es" aria-pressed="true">ES</button>
+        <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="menu-toggle" aria-label="Menú" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div class="section-head">
+    <span class="eyebrow" data-i18n="community.eyebrow">Comunidad</span>
+    <h1 data-i18n="community.title" style="font-size:clamp(1.8rem,3.4vw,2.4rem);color:var(--ink)">Conversemos sobre dinero, sin pena</h1>
+    <p data-i18n="community.lead">Deja tus preguntas, comparte cómo te fue en los juegos o qué capítulo te ayudó. Beken responde directamente aquí.</p>
+  </div>
+
+  <div class="content-card" style="max-width:60ch;margin-bottom:32px">
+    <h3 data-i18n="community.guidelines.title">Cómo participar</h3>
+    <p data-i18n="community.guidelines.body">Sé respetuoso, evita compartir datos financieros personales (números de cuenta, montos exactos de tu deuda, etc.) y recuerda que los comentarios son públicos.</p>
+  </div>
+
+  <!--
+    GISCUS — comentarios con GitHub Discussions (gratis, sin anuncios, sin rastreo).
+    Pasos para activarlo cuando subas el repo a GitHub:
+      1. Activa "Discussions" en la configuración del repositorio.
+      2. Ve a https://giscus.app y conecta tu repositorio.
+      3. Copia los valores data-repo, data-repo-id, data-category y data-category-id
+         que te da esa página y pégalos abajo, reemplazando los placeholders.
+      4. Borra el bloque "placeholder" de abajo (o déjalo, se oculta solo
+         cuando el script de giscus carga correctamente).
+  -->
+  <div id="giscus-comments"
+       data-repo="bawher12/MonkeyMoney"
+       data-repo-id="R_kgDOS_rIpA"
+       data-category="General"
+       data-category-id="DIC_kwDOS_rIpM4C_iSE"
+  </div>
+
+  <div class="content-card" id="comments-placeholder" style="max-width:60ch">
+    <h3 data-i18n="community.placeholder.title">Los comentarios se activarán muy pronto</h3>
+    <p data-i18n="community.placeholder.body">Esta sección usará GitHub Discussions a través de Giscus en cuanto el sitio esté publicado en su repositorio definitivo.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-copy">© <span id="year"></span> Beken Bauher Marin — MonkeyMoney. <span data-i18n="footer.rights">Todos los derechos reservados.</span></div>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="js/comments.js"></script>
+</body>
+</html>

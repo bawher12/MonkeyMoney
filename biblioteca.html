@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biblioteca — MonkeyMoney</title>
+<meta name="description" content="Libros y artículos de finanzas escritos por Beken Bauher Marin, disponibles para leer en línea.">
+<link rel="icon" href="assets/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-root="">
+
+<header class="site-header">
+  <div class="nav-inner wrap">
+    <a href="index.html" class="logo">
+      <img src="assets/mascot-face.png" class="logo-mark" alt="MonkeyMoney">
+      <span class="logo-text">MonkeyMoney</span>
+    </a>
+    <nav class="main-nav" id="main-nav">
+      <a href="index.html" data-i18n="nav.home">Inicio</a>
+      <a href="juegos.html" data-i18n="nav.games">Juegos</a>
+      <a href="biblioteca.html" data-i18n="nav.library" aria-current="page">Biblioteca</a>
+      <a href="comunidad.html" data-i18n="nav.community">Comunidad</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Idioma / Language">
+        <button class="lang-btn" data-lang="es" aria-pressed="true">ES</button>
+        <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button class="menu-toggle" aria-label="Menú" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap section">
+  <div id="library-list">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="library.eyebrow">Biblioteca MonkeyMoney</span>
+      <h1 data-i18n="library.title" style="font-size:clamp(1.8rem,3.4vw,2.4rem);color:var(--ink)">Libros y artículos para leer aquí mismo</h1>
+      <p data-i18n="library.lead">Todo el material es de Beken Bauher Marin. Es de lectura libre y gratuita dentro de la página; no está disponible para descarga ni reenvío.</p>
+    </div>
+
+    <div class="card-grid" id="library-list-grid"></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-copy">© <span id="year"></span> Beken Bauher Marin — MonkeyMoney. <span data-i18n="footer.rights">Todos los derechos reservados.</span></div>
+  </div>
+</footer>
+
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<script src="js/i18n.js"></script>
+<script src="js/main.js"></script>
+<script src="js/library-render.js"></script>
+</body>
+</html>
