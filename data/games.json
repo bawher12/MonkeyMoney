@@ -1,0 +1,46 @@
+[
+  {
+    "id": "presupuesto-express",
+    "file": "presupuesto-express.html",
+    "status": "disponible",
+    "category": "Finanzas personales",
+    "category_en": "Personal finance",
+    "title_es": "Presupuesto Express",
+    "title_en": "Budget Express",
+    "desc_es": "Reparte un ingreso mensual entre gastos, ahorro y deuda. Descubre qué pasa cuando el presupuesto no cierra.",
+    "desc_en": "Split a monthly income between expenses, savings, and debt. See what happens when the budget doesn't add up."
+  },
+  {
+    "id": "trampa-del-interes",
+    "file": "",
+    "status": "proximamente",
+    "category": "Finanzas personales",
+    "category_en": "Personal finance",
+    "title_es": "La Trampa del Interés",
+    "title_en": "The Interest Trap",
+    "desc_es": "Simula una tarjeta de crédito durante 12 meses y observa cómo crece —o se controla— la deuda.",
+    "desc_en": "Simulate a credit card over 12 months and watch debt grow —or stay under control."
+  },
+  {
+    "id": "flujo-de-caja",
+    "file": "",
+    "status": "proximamente",
+    "category": "Finanzas empresariales",
+    "category_en": "Business finance",
+    "title_es": "Flujo de Caja",
+    "title_en": "Cash Flow",
+    "desc_es": "Administra el efectivo de un pequeño negocio durante un trimestre difícil sin quedarte sin liquidez.",
+    "desc_en": "Manage a small business's cash through a tough quarter without running out of liquidity."
+  },
+  {
+    "id": "riesgo-y-paciencia",
+    "file": "",
+    "status": "proximamente",
+    "category": "Inversión",
+    "category_en": "Investing",
+    "title_es": "Riesgo y Paciencia",
+    "title_en": "Risk and Patience",
+    "desc_es": "Construye un portafolio simple y vive 10 años simulados de subidas y caídas del mercado.",
+    "desc_en": "Build a simple portfolio and live through 10 simulated years of market ups and downs."
+  }
+]

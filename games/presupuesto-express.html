@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presupuesto Express</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0D1117;
+    --surface: #161B22;
+    --surface-2: #1D2430;
+    --ink: #F4F6F2;
+    --ink-soft: #A6AEBB;
+    --acid: #39FF6A;
+    --pulse: #FF3DAD;
+    --gold: #FFC93C;
+    --line: rgba(244,246,242,0.10);
+    --line-strong: rgba(244,246,242,0.18);
+    --font-display: "Unbounded", "Plus Jakarta Sans", sans-serif;
+    --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-mono: "Space Mono", "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 28px;
+    background: var(--void);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+  h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.4rem; color: var(--ink); margin: 0 0 8px; }
+  p.intro { color: var(--ink-soft); max-width: 60ch; margin: 0 0 22px; font-size: 0.94rem; }
+  .budget-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 60px;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .budget-row label { font-weight: 700; font-size: 0.9rem; color: var(--ink); }
+  .budget-row input[type="range"] { width: 100%; accent-color: var(--acid); }
+  .budget-row .val { font-family: var(--font-mono); text-align: right; color: var(--ink-soft); }
+  .total-row { border-bottom: none; font-weight: 700; }
+  .total-row .val { color: var(--gold); font-size: 1.05rem; }
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    border: 1px dashed var(--line-strong);
+    background: var(--surface);
+  }
+  .feedback.ok { color: var(--acid); border-color: var(--acid); }
+  .feedback.warn { color: var(--pulse); border-color: var(--pulse); }
+  button {
+    margin-top: 18px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.88rem;
+    padding: 10px 22px;
+    border-radius: 100px;
+    border: 2px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.12s ease;
+  }
+  button:hover { border-color: var(--pulse); color: var(--pulse); transform: translateY(-1px); }
+</style>
+</head>
+<body>
+
+<h1>Presupuesto Express</h1>
+<p class="intro">Tienes un ingreso mensual de $1,000. Ajusta cuánto destinas a cada categoría. Si te pasas del 100%, lo verás de inmediato.</p>
+
+<div class="budget-row">
+  <label>Gastos esenciales</label>
+  <input type="range" min="0" max="100" value="40" id="r-needs">
+  <span class="val"><span id="v-needs">40</span>%</span>
+</div>
+<div class="budget-row">
+  <label>Gustos y ocio</label>
+  <input type="range" min="0" max="100" value="20" id="r-wants">
+  <span class="val"><span id="v-wants">20</span>%</span>
+</div>
+<div class="budget-row">
+  <label>Pago de deudas</label>
+  <input type="range" min="0" max="100" value="20" id="r-debt">
+  <span class="val"><span id="v-debt">20</span>%</span>
+</div>
+<div class="budget-row">
+  <label>Ahorro / inversión</label>
+  <input type="range" min="0" max="100" value="20" id="r-save">
+  <span class="val"><span id="v-save">20</span>%</span>
+</div>
+<div class="budget-row total-row">
+  <label>Total asignado</label>
+  <span></span>
+  <span class="val" id="v-total">100%</span>
+</div>
+
+<div class="feedback ok" id="feedback"></div>
+
+<button id="reset-game">Reiniciar</button>
+
+<script>
+  const ids = ["needs", "wants", "debt", "save"];
+  const sliders = {};
+  ids.forEach((id) => (sliders[id] = document.getElementById(`r-${id}`)));
+  const totalEl = document.getElementById("v-total");
+  const feedbackEl = document.getElementById("feedback");
+  const DEFAULTS = { needs: 40, wants: 20, debt: 20, save: 20 };
+
+  function update() {
+    let total = 0;
+    ids.forEach((id) => {
+      const val = Number(sliders[id].value);
+      document.getElementById(`v-${id}`).textContent = val;
+      total += val;
+    });
+    totalEl.textContent = `${total}%`;
+    const save = Number(sliders.save.value);
+
+    feedbackEl.classList.remove("ok", "warn");
+    if (total > 100) {
+      feedbackEl.classList.add("warn");
+      feedbackEl.textContent = "Estás asignando más del 100% de tu ingreso. Eso, en la vida real, es deuda nueva.";
+    } else if (save === 0) {
+      feedbackEl.classList.add("warn");
+      feedbackEl.textContent = "Tu presupuesto cierra, pero no estás ahorrando nada. Un imprevisto te obligaría a endeudarte.";
+    } else {
+      feedbackEl.classList.add("ok");
+      feedbackEl.textContent = "Buen balance: cubres lo esencial, pagas deuda y separas ahorro. Así se construye margen.";
+    }
+  }
+
+  ids.forEach((id) => sliders[id].addEventListener("input", update));
+  document.getElementById("reset-game").addEventListener("click", () => {
+    ids.forEach((id) => (sliders[id].value = DEFAULTS[id]));
+    update();
+  });
+  update();
+</script>
+</body>
+</html>
