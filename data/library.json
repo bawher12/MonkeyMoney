@@ -38,4 +38,70 @@
     "desc_es": "Los conceptos básicos de invertir a largo plazo, sin jerga innecesaria.",
     "desc_en": "The basics of long-term investing, without unnecessary jargon."
   }
+  {
+    "id": "guia-monkey-principiantes",
+    "file": "Monkey Money - Guia de Inversion para Principiantes.pdf",
+    "status": "disponible",
+    "type": "Guia",
+    "type_en": "Guide",
+    "category": "Estudio",
+    "category_en": "Study",
+    "title_es": "Guia Monkey Principiantes",
+    "title_en": "Beginner Monkey Guide",
+    "desc_es": "",
+    "desc_en": ""
+  },
+  {
+    "id": "guia-monkey-intermedio",
+    "file": "Monkey Money - Guia de Inversion Nivel Intermedio.pdf",
+    "status": "disponible",
+    "type": "Guía",
+    "type_en": "Guide",
+    "category": "Estudio",
+    "category_en": "Study",
+    "title_es": "Guia Monkey Intermedio",
+    "title_en": "The Monkey's Middle Guide",
+    "desc_es": "",
+    "desc_en": ""
+  },
+  {
+    "id": "guia-monkey-experto",
+    "file": "Monkey Money - Guia de Inversion Nivel Experto.pdf",
+    "status": "disponible",
+    "type": "Guía",
+    "type_en": "Guide",
+    "category": "Estudio",
+    "category_en": "Study",
+    "title_es": "Guía Monkey Experto",
+    "title_en": "Expert Monkey Guide",
+    "desc_es": "",
+    "desc_en": ""
+  },
+  {
+    "id": "el-mono-que-imprime",
+    "file": "printing-monkey.pdf",
+    "status": "disponible",
+    "type": "Libro",
+    "type_en": "Book",
+    "category": "",
+    "category_en": "",
+    "title_es": "El Mono Que Imprime",
+    "title_en": "Printing Monkey",
+    "desc_es": "",
+    "desc_en": ""
+  },
+  {
+    "id": "el-sistema-del-mono",
+    "file": "El Sistema Del Mono.pdf",
+    "status": "disponible",
+    "type": "Libro",
+    "type_en": "Book",
+    "category": "",
+    "category_en": "",
+    "title_es": "El Sistema Del Mono",
+    "title_en": "The Monkey's System",
+    "desc_es": "",
+    "desc_en": ""
+  }
+
 ]
