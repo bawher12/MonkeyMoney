@@ -42,5 +42,28 @@
     "title_en": "Risk and Patience",
     "desc_es": "Construye un portafolio simple y vive 10 años simulados de subidas y caídas del mercado.",
     "desc_en": "Build a simple portfolio and live through 10 simulated years of market ups and downs."
+  },
+  {
+    "id": "monkey-play",
+    "file": "MonkeyPlay.html",
+    "status": "disponible",
+    "category": "Juego",
+    "category_en": "Game",
+    "title_es": "Monkey Play",
+    "title_en": "Monkey Play",
+    "desc_es": "",
+    "desc_en": ""
+  },
+  {
+    "id": "monkey-duel",
+    "file": "MonkeyDuel.html",
+    "status": "disponible",
+    "category": "Juego",
+    "category_en": "Game",
+    "title_es": "Monkey Duel",
+    "title_en": "Monkey Duel",
+    "desc_es": "",
+    "desc_en": ""
   }
+
 ]
