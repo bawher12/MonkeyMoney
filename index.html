@@ -137,13 +137,27 @@
   <h3>Apoya nuestro proyecto MonkeyMoney</h3>
   <p>Tu aporte nos ayuda a seguir creando contenido educativo.</p>
 
-  <!-- Botón PayPal con enlace directo -->
+  <!-- Botón PayPal directo -->
   <a href="https://www.paypal.com/donate/?business=N66LHU6PSTJXJ&no_recurring=0&item_name=Gracias+por+creer+en+MonkeyMoney+y+en+el+poder+de+aprender+juntos%2C+con+tu+aporte+seguimos+compartiendo+educaci%C3%B3n+financiera.%21&currency_code=USD" target="_blank" 
+
      style="background-color:#0070ba; color:white; padding:12px 24px; 
             text-decoration:none; font-size:16px; border-radius:6px; 
-            display:inline-block;">
+            display:inline-block; margin:10px;">
     Donar con PayPal
   </a>
+
+  <!-- Botón para mostrar QR -->
+  <button onclick="document.getElementById('paypalQR').style.display='block'" 
+          style="background-color:#34a853; color:white; padding:12px 24px; 
+                 font-size:16px; border:none; border-radius:6px; cursor:pointer; margin:10px;">
+    Donar con QR
+  </button>
+
+  <!-- QR oculto por defecto -->
+  <div id="paypalQR" style="display:none; margin-top:20px;">
+    <p>Escanea este código QR para donar desde tu móvil:</p>
+    <img src="Código QR.png" alt="QR de PayPal" width="200">
+  </div>
 </div>
 
 
