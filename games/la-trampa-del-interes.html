@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Trampa del Interés — Monkey Money</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0a0a0a;
+    --panel:#131313;
+    --panel-2:#1a1a1a;
+    --acid:#b6ff3c;
+    --magenta:#ff3ccb;
+    --ink:#f4f4f0;
+    --ink-dim:#9a9a92;
+    --danger:#ff5252;
+    --warn:#ffcf4d;
+    --line:#262626;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--void);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;}
+  body{
+    min-height:100vh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:32px 16px 80px;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(182,255,60,0.10), transparent 40%),
+      radial-gradient(circle at 90% 20%, rgba(255,60,203,0.10), transparent 45%),
+      var(--void);
+  }
+  .stage{width:100%;max-width:640px;}
+  .stage.shake{animation:screen-shake .35s ease;}
+  @keyframes screen-shake{
+    0%,100%{transform:translate(0,0);}
+    20%{transform:translate(-4px,2px);}
+    40%{transform:translate(4px,-2px);}
+    60%{transform:translate(-3px,1px);}
+    80%{transform:translate(3px,-1px);}
+  }
+  h1,h2,h3{font-family:'Unbounded',sans-serif;margin:0;}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--acid);}
+
+  button{font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;}
+  .btn{
+    border:2px solid var(--acid);background:transparent;color:var(--acid);
+    font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px;
+    box-shadow:4px 4px 0 var(--magenta);transition:transform .12s ease;
+  }
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--magenta);}
+  .btn:active{transform:translate(0,0);box-shadow:2px 2px 0 var(--magenta);}
+  .btn.solid{background:var(--acid);color:#08130a;}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+
+  .screen{display:none;}
+  .screen.active{display:block;animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- loading ---------- */
+  .loading-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    padding:60px 28px;text-align:center;
+  }
+  .loading-logo{font-family:'Unbounded',sans-serif;font-size:1.4rem;color:var(--acid);margin-bottom:6px;}
+  .loading-logo span{color:var(--magenta);}
+  .loading-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-dim);margin-bottom:28px;}
+  .loading-monkey{font-size:44px;display:inline-block;animation:loading-bounce .6s ease-in-out infinite;}
+  @keyframes loading-bounce{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-14px) rotate(-8deg);}}
+  .loading-bar-wrap{width:100%;max-width:220px;height:6px;background:var(--line);border-radius:4px;margin:24px auto 0;overflow:hidden;}
+  .loading-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--acid),var(--magenta));border-radius:4px;transition:width .25s ease;}
+
+  /* ---------- intro ---------- */
+  .intro-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:32px 28px;}
+  .intro-card h1{font-size:clamp(1.6rem,4vw,2.1rem);line-height:1.15;margin:10px 0 14px;}
+  .intro-card p{color:var(--ink-dim);line-height:1.6;font-size:15px;}
+  .rules{display:grid;gap:12px;margin:22px 0 26px;}
+  .rule{display:flex;gap:12px;align-items:flex-start;background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;}
+  .rule .hex{
+    flex:none;width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+    background:var(--void);border:2px solid var(--acid);
+    clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);
+    font-family:'Space Mono',monospace;font-size:16px;color:var(--acid);
+  }
+  .rule p{margin:0;font-size:14px;color:var(--ink);}
+  .rule span{color:var(--ink-dim);}
+
+  /* ---------- HUD ---------- */
+  .hud{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .month-track{flex:1;display:flex;gap:4px;margin:0 16px;}
+  .month-dot{flex:1;height:6px;border-radius:4px;background:var(--line);}
+  .month-dot.done{background:var(--acid);}
+  .month-dot.now{background:var(--magenta);}
+  .month-label{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-dim);white-space:nowrap;}
+
+  /* ---------- tarjeta ---------- */
+  .top-row{display:grid;grid-template-columns:1.3fr 1fr;gap:10px;margin-bottom:14px;}
+  .credit-card{
+    position:relative;border-radius:16px;padding:16px 18px;
+    background:linear-gradient(135deg,#12210a,#0a0a0a 60%);
+    border:1px solid #274012;overflow:hidden;
+    transition:box-shadow .3s ease,border-color .3s ease,background .4s ease;
+  }
+  .credit-card.danger{
+    background:linear-gradient(135deg,#2a0a12,#0a0a0a 60%);border-color:#5c1424;
+    box-shadow:0 0 30px rgba(255,82,82,0.28);animation:pulse-danger 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse-danger{0%,100%{box-shadow:0 0 18px rgba(255,82,82,0.16);}50%{box-shadow:0 0 36px rgba(255,82,82,0.34);}}
+  .credit-card .glow{position:absolute;top:-40%;right:-20%;width:60%;height:180%;background:radial-gradient(circle,rgba(182,255,60,0.16),transparent 65%);pointer-events:none;}
+  .credit-card.danger .glow{background:radial-gradient(circle,rgba(255,82,82,0.20),transparent 65%);}
+  .card-brand{font-family:'Unbounded',sans-serif;font-size:11px;color:var(--acid);letter-spacing:0.03em;}
+  .credit-card.danger .card-brand{color:var(--danger);}
+  .card-balance-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);letter-spacing:0.08em;text-transform:uppercase;margin-top:14px;}
+  .card-balance{font-family:'Unbounded',sans-serif;font-size:clamp(1.5rem,6vw,1.9rem);color:var(--acid);margin-top:2px;transition:color .3s ease;}
+  .credit-card.danger .card-balance{color:var(--danger);}
+  .card-apr{margin-top:10px;font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);}
+  .card-apr b{color:var(--ink);}
+
+  /* ---------- monstruo del interes ---------- */
+  .monster-box{
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+  }
+  .monster-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+  .monster{font-size:34px;transition:transform .4s cubic-bezier(.34,1.56,.64,1),filter .4s ease;filter:drop-shadow(0 0 6px rgba(255,82,82,0.25));}
+  .monster.grow{animation:monster-grow .5s ease;}
+  @keyframes monster-grow{0%{transform:scale(1);}40%{transform:scale(1.35) rotate(-6deg);}100%{transform:scale(1);}}
+  .monster.shrink{animation:monster-shrink .5s ease;}
+  @keyframes monster-shrink{0%{transform:scale(1);}50%{transform:scale(0.7) rotate(8deg);}100%{transform:scale(1);}}
+
+  /* ---------- mini stats ---------- */
+  .mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .mini-stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px;}
+  .mini-stat .label{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.08em;}
+  .mini-stat .value{font-family:'Unbounded',sans-serif;font-size:17px;margin-top:2px;}
+  .mini-stat.interest .value{color:var(--magenta);}
+
+  .event-banner{display:none;align-items:center;gap:12px;background:var(--panel-2);border:1px solid var(--warn);border-radius:14px;padding:12px 14px;margin-bottom:14px;}
+  .event-banner.show{display:flex;}
+  .event-banner .hex{flex:none;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:2px solid var(--warn);clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);font-size:13px;}
+  .event-banner p{margin:0;font-size:13px;color:var(--ink);}
+  .event-banner b{color:var(--warn);}
+
+  /* ---------- arena de atrapada ---------- */
+  .section-title{font-family:'Unbounded',sans-serif;font-size:14px;margin:0 0 10px;color:var(--ink);}
+  .catch-hud{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .catch-hud .timer-wrap{flex:1;height:8px;background:var(--line);border-radius:4px;margin:0 12px;overflow:hidden;}
+  .catch-hud .timer-bar{height:100%;background:var(--acid);width:100%;transition:width .1s linear;}
+  .catch-hud .caught-total{font-family:'Unbounded',sans-serif;font-size:15px;color:var(--acid);white-space:nowrap;}
+  .month-theme{
+    display:none;text-align:center;font-family:'Space Mono',monospace;font-size:11px;
+    color:var(--warn);background:var(--panel-2);border:1px solid var(--warn);
+    border-radius:10px;padding:6px 10px;margin-bottom:8px;
+  }
+  .arena{
+    position:relative;width:100%;height:240px;border-radius:16px;overflow:hidden;
+    background:linear-gradient(160deg,#151515,#0a0a0a 70%);
+    border:1px solid var(--line);margin-bottom:14px;touch-action:none;
+  }
+  .arena-layer{position:absolute;left:0;right:0;pointer-events:none;}
+  .arena-layer.clouds{
+    top:10px;height:30px;
+    background-image:radial-gradient(ellipse 28px 10px at 15% 50%, rgba(255,255,255,0.06), transparent 70%),
+                      radial-gradient(ellipse 34px 12px at 55% 40%, rgba(255,255,255,0.05), transparent 70%),
+                      radial-gradient(ellipse 24px 9px at 85% 55%, rgba(255,255,255,0.06), transparent 70%);
+    background-repeat:repeat-x;background-size:260px 30px;
+    animation:drift-clouds 40s linear infinite;
+  }
+  @keyframes drift-clouds{from{background-position:0 0;}to{background-position:-260px 0;}}
+  .arena-layer.buildings{
+    bottom:18%;height:34%;
+    background-image:
+      linear-gradient(to top, #101d09 0 100%),
+      repeating-linear-gradient(90deg,
+        rgba(182,255,60,0.05) 0 3px, transparent 3px 26px);
+    -webkit-mask-image:repeating-linear-gradient(90deg,
+        #000 0 18px, transparent 18px 22px, #000 22px 40px, transparent 40px 46px);
+    mask-image:repeating-linear-gradient(90deg,
+        #000 0 18px, transparent 18px 22px, #000 22px 40px, transparent 40px 46px);
+    background-color:#101d09;
+    animation:drift-buildings 26s linear infinite;
+    background-size:200% 100%;
+  }
+  @keyframes drift-buildings{from{background-position:0 0;}to{background-position:-400px 0;}}
+  .arena-layer.ground{bottom:0;height:18%;background:#0f1a08;}
+  .arena-item{position:absolute;font-size:26px;line-height:1;user-select:none;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.5));z-index:3;}
+  .arena-item .tag{
+    display:block;position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    font-family:'Space Mono',monospace;font-size:9px;color:var(--ink);
+    background:rgba(0,0,0,0.55);padding:1px 5px;border-radius:6px;white-space:nowrap;margin-top:2px;
+  }
+  .arena-item.necesidad .tag{color:var(--acid);}
+  .mono-shadow{
+    position:absolute;bottom:6px;width:40px;height:10px;border-radius:50%;
+    background:rgba(0,0,0,0.5);filter:blur(1px);z-index:2;
+    transition:left .08s linear, transform .15s ease;
+  }
+  .mono-sprite{
+    position:absolute;bottom:14px;width:46px;height:46px;font-size:40px;line-height:46px;
+    text-align:center;transition:transform .08s linear;will-change:left,transform;z-index:4;
+  }
+  .mono-sprite.flip{transform:scaleX(-1);}
+  .mono-sprite.bounce{animation:mono-bounce .28s ease;}
+  @keyframes mono-bounce{0%{transform:translateY(0) scaleX(var(--fx,1));}40%{transform:translateY(-16px) scaleX(var(--fx,1));}100%{transform:translateY(0) scaleX(var(--fx,1));}}
+  .catch-pop{
+    position:absolute;font-family:'Unbounded',sans-serif;font-size:13px;color:var(--acid);
+    pointer-events:none;animation:pop-up .6s ease forwards;z-index:5;
+  }
+  @keyframes pop-up{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-30px);}}
+  .coin-particle{
+    position:absolute;font-size:13px;pointer-events:none;z-index:5;
+    animation:coin-burst .55s ease-out forwards;
+  }
+  @keyframes coin-burst{
+    0%{opacity:1;transform:translate(0,0) scale(1);}
+    100%{opacity:0;transform:translate(var(--dx), var(--dy)) scale(0.6);}
+  }
+  .touch-controls{position:absolute;bottom:8px;left:8px;right:8px;display:flex;justify-content:space-between;pointer-events:none;z-index:6;}
+  .touch-btn{
+    pointer-events:all;width:52px;height:52px;border-radius:50%;
+    background:rgba(182,255,60,0.12);border:2px solid var(--acid);color:var(--acid);
+    font-size:20px;display:flex;align-items:center;justify-content:center;
+  }
+  .catch-caption{text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-dim);margin-bottom:14px;}
+
+  /* ---------- pago ---------- */
+  .pay-options{display:grid;gap:10px;margin-bottom:18px;}
+  .pay-option{display:flex;justify-content:space-between;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;color:var(--ink);text-align:left;}
+  .pay-option:hover{border-color:var(--acid);}
+  .pay-option.selected{border-color:var(--acid);background:var(--panel-2);box-shadow:3px 3px 0 var(--magenta);}
+  .pay-option .name{font-weight:700;font-size:13px;}
+  .pay-option .sub{font-size:11px;color:var(--ink-dim);margin-top:2px;}
+  .pay-option .amt{font-family:'Space Mono',monospace;font-size:14px;color:var(--acid);}
+  .advance-row{display:flex;justify-content:flex-end;}
+
+  .banana{position:fixed;font-size:26px;pointer-events:none;z-index:50;transition:left .45s cubic-bezier(.3,.6,.4,1), top .45s cubic-bezier(.3,.6,.4,1), opacity .2s ease .3s;}
+
+  /* ---------- resumen ---------- */
+  .summary-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:30px 26px;text-align:center;}
+  .summary-hex{width:64px;height:64px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;border:3px solid var(--acid);clip-path:polygon(25% 5%,75% 5%,100% 50%,75% 95%,25% 95%,0% 50%);font-size:30px;}
+  .summary-card h2{font-size:1.5rem;margin-bottom:8px;}
+  .summary-card p.lead{color:var(--ink-dim);font-size:14px;line-height:1.6;margin-bottom:22px;}
+  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;margin-bottom:22px;}
+  .summary-grid .stat{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .summary-grid .stat .label{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:0.08em;}
+  .summary-grid .stat .value{font-family:'Unbounded',sans-serif;font-size:17px;margin-top:4px;}
+  .summary-grid .stat.bad .value{color:var(--danger);}
+  .summary-grid .stat.good .value{color:var(--acid);}
+  .lesson{background:var(--panel-2);border-left:3px solid var(--magenta);border-radius:0 12px 12px 0;padding:14px 16px;text-align:left;font-size:13px;color:var(--ink);line-height:1.6;margin-bottom:24px;}
+  .lesson b{color:var(--magenta);}
+  .record-box{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:12px;
+    padding:10px 14px;margin-bottom:18px;font-size:12px;color:var(--ink-dim);
+  }
+  .record-box b{color:var(--acid);font-family:'Space Mono',monospace;}
+  .record-box.new-record{border-color:var(--acid);color:var(--acid);}
+  .summary-actions{display:flex;gap:10px;}
+  .summary-actions .btn{flex:1;}
+  .btn.share{background:var(--magenta);color:#1a0410;border-color:var(--magenta);box-shadow:4px 4px 0 var(--acid);}
+  .btn.share:hover{box-shadow:6px 6px 0 var(--acid);}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+
+  <!-- ============ CARGA ============ -->
+  <section id="screen-loading" class="screen active">
+    <div class="loading-card">
+      <div class="loading-monkey">🐵</div>
+      <p class="loading-logo">Monkey<span>Money</span></p>
+      <p class="loading-sub">CARGANDO LA TRAMPA DEL INTERÉS…</p>
+      <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+    </div>
+  </section>
+
+  <!-- ============ INTRO ============ -->
+  <section id="screen-intro" class="screen">
+    <div class="intro-card">
+      <span class="eyebrow">Finanzas personales · Juego arcade</span>
+      <h1>La trampa del interés</h1>
+      <p>Mono tiene una tarjeta de crédito nueva y 12 meses por delante. Cada mes corre por la calle atrapando (o esquivando) gastos, y después decide cuánto pagarle al monstruo del interés antes de que crezca demasiado.</p>
+
+      <div class="rules">
+        <div class="rule">
+          <div class="hex">🐵</div>
+          <p>Mueve a Mono con <span>← → (o A/D, o los botones táctiles)</span> para atrapar los gastos que quieras hacer ese mes. Lo que no atrapes, no lo compras.</p>
+        </div>
+        <div class="rule">
+          <div class="hex">$</div>
+          <p>Después decides cuánto <span>pagar</span>: el mínimo, un monto fijo, o el saldo completo.</p>
+        </div>
+        <div class="rule">
+          <div class="hex">👹</div>
+          <p>El monstruo del interés crece con el <span>28% anual</span> sobre lo que dejes sin pagar. Págale y se encoge; ignóralo y se pone grande y furioso.</p>
+        </div>
+        <div class="rule">
+          <div class="hex">!</div>
+          <p>A veces caen <span>eventos inesperados</span>: bonos, emergencias, ofertas.</p>
+        </div>
+      </div>
+
+      <button class="btn solid" id="btn-start" style="width:100%;">Empezar los 12 meses</button>
+    </div>
+  </section>
+
+  <!-- ============ JUEGO ============ -->
+  <section id="screen-game" class="screen">
+    <div class="hud">
+      <span class="month-label" id="month-label">Mes 1 / 12</span>
+      <div class="month-track" id="month-track"></div>
+    </div>
+
+    <div class="top-row">
+      <div class="credit-card" id="credit-card">
+        <div class="glow"></div>
+        <span class="card-brand">MONKEY CARD</span>
+        <div class="card-balance-label">Saldo actual</div>
+        <div class="card-balance" id="card-balance">$0</div>
+        <div class="card-apr" id="card-apr-month">Interés mensual: <b>2.33%</b></div>
+      </div>
+      <div class="monster-box">
+        <span class="monster-label">Interés</span>
+        <div class="monster" id="monster">👹</div>
+      </div>
+    </div>
+
+    <div class="mini-stats">
+      <div class="mini-stat">
+        <div class="label">Total gastado</div>
+        <div class="value" id="stat-spent">$0</div>
+      </div>
+      <div class="mini-stat interest">
+        <div class="label">Interés pagado</div>
+        <div class="value" id="stat-interest">$0</div>
+      </div>
+    </div>
+
+    <div class="event-banner" id="event-banner">
+      <div class="hex">!</div>
+      <p id="event-text"></p>
+    </div>
+
+    <!-- fase de atrapada -->
+    <div id="catch-zone">
+      <h3 class="section-title">Fase 1 — Atrapa los gastos del mes</h3>
+      <div class="month-theme" id="month-theme"></div>
+      <div class="catch-hud">
+        <span style="font-family:'Space Mono',monospace;font-size:11px;color:var(--ink-dim);">Tiempo</span>
+        <div class="timer-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+        <span class="caught-total" id="caught-total">$0</span>
+      </div>
+      <div class="arena" id="arena">
+        <div class="arena-layer clouds"></div>
+        <div class="arena-layer buildings"></div>
+        <div class="arena-layer ground"></div>
+        <div class="mono-shadow" id="mono-shadow"></div>
+        <div class="mono-sprite" id="mono-sprite">🐵</div>
+        <div class="touch-controls">
+          <button class="touch-btn" id="btn-left" aria-label="Mover izquierda">◀</button>
+          <button class="touch-btn" id="btn-right" aria-label="Mover derecha">▶</button>
+        </div>
+      </div>
+      <p class="catch-caption">🍎 mercado (barato y necesario) · 👕🍕📱✈️💊 antojos y gastos grandes — tú decides qué atrapar</p>
+    </div>
+
+    <!-- fase de pago -->
+    <div id="pay-zone" style="display:none;">
+      <h3 class="section-title">Fase 2 — ¿Cuánto le pagas al monstruo?</h3>
+      <div class="pay-options" id="pay-options"></div>
+      <div class="advance-row">
+        <button class="btn solid" id="btn-pay">Pagar y cerrar el mes →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESUMEN ============ -->
+  <section id="screen-summary" class="screen">
+    <div class="summary-card">
+      <div class="summary-hex" id="summary-hex">🐒</div>
+      <h2 id="summary-title">Fin de los 12 meses</h2>
+      <p class="lead" id="summary-lead"></p>
+      <div class="summary-grid">
+        <div class="stat"><div class="label">Total gastado</div><div class="value" id="sum-spent">$0</div></div>
+        <div class="stat bad"><div class="label">Interés pagado</div><div class="value" id="sum-interest">$0</div></div>
+        <div class="stat"><div class="label">Total pagado</div><div class="value" id="sum-paid">$0</div></div>
+        <div class="stat" id="sum-balance-box"><div class="label">Saldo final</div><div class="value" id="sum-balance">$0</div></div>
+      </div>
+      <div class="lesson" id="lesson-text"></div>
+      <div class="record-box" id="record-box"></div>
+      <div class="summary-actions">
+        <button class="btn share" id="btn-share">Compartir resultado</button>
+        <button class="btn solid" id="btn-restart">Jugar de nuevo</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var MONTHS = 12;
+  var APR = 0.28;
+  var MONTHLY_RATE = APR / 12;
+  var CATCH_SECONDS = 11;
+
+  var ITEM_TYPES = [
+    { id:'mercado',    emoji:'🍎', amt:60,  weight:4, necesidad:true  },
+    { id:'antojo',     emoji:'👕', amt:180, weight:2, necesidad:false },
+    { id:'salidas',    emoji:'🍕', amt:220, weight:2, necesidad:false },
+    { id:'tech',       emoji:'📱', amt:450, weight:1, necesidad:false },
+    { id:'viaje',      emoji:'✈️', amt:520, weight:1, necesidad:false },
+    { id:'emergencia', emoji:'💊', amt:300, weight:1, necesidad:false }
+  ];
+
+  var MONTH_THEMES = {
+    1:  { label:'Enero — cuesta de enero',        emoji:'🥶', weights:{ mercado:6, antojo:1, salidas:1, tech:0, viaje:0, emergencia:1 } },
+    6:  { label:'Junio — vacaciones de mitad de año', emoji:'🏖️', weights:{ mercado:3, antojo:1, salidas:2, tech:1, viaje:3, emergencia:1 } },
+    9:  { label:'Septiembre — vuelta a clases',   emoji:'🎒', weights:{ mercado:3, antojo:1, salidas:1, tech:3, viaje:0, emergencia:1 } },
+    12: { label:'Diciembre — temporada de regalos', emoji:'🎁', weights:{ mercado:2, antojo:3, salidas:2, tech:2, viaje:2, emergencia:1 } }
+  };
+
+  function buildSpawnPool(month){
+    var theme = MONTH_THEMES[month];
+    var pool = [];
+    ITEM_TYPES.forEach(function(t){
+      var w = (theme && theme.weights && (t.id in theme.weights)) ? theme.weights[t.id] : t.weight;
+      for (var i=0;i<w;i++) pool.push(t);
+    });
+    return pool;
+  }
+  var SPAWN_POOL = buildSpawnPool(1);
+
+  var EVENTS = [
+    { text:'Recibiste un <b>bono</b> de $150. Puedes usarlo para pagar más este mes.', type:'bonus', value:150 },
+    { text:'Pago tarde: te cobraron un <b>recargo de $35</b> sobre tu saldo.', type:'fee', value:35 },
+    { text:'Promo del banco: este mes tu <b>interés es 0%</b>.', type:'promo0', value:0 },
+    { text:'Gasto médico inesperado de <b>$200</b>, se suma directo al saldo.', type:'medical', value:200 }
+  ];
+
+  /* ================= SONIDO (sintetizado, sin archivos) ================= */
+  var audioCtx = null;
+  function ac(){
+    if (!audioCtx){
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e){ audioCtx = null; }
+    }
+    return audioCtx;
+  }
+  function tone(freq, dur, type, gainStart, delay){
+    var ctxA = ac();
+    if (!ctxA) return;
+    var t0 = ctxA.currentTime + (delay||0);
+    var osc = ctxA.createOscillator();
+    var gain = ctxA.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, t0);
+    gain.gain.setValueAtTime(gainStart||0.12, t0);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gain); gain.connect(ctxA.destination);
+    osc.start(t0); osc.stop(t0 + dur);
+  }
+  function sndCatch(necesidad){
+    tone(necesidad ? 520 : 660, 0.12, 'triangle', 0.10);
+    tone(necesidad ? 660 : 880, 0.1, 'triangle', 0.07, 0.05);
+  }
+  function sndPay(){
+    tone(300, 0.1, 'square', 0.08);
+    tone(420, 0.12, 'square', 0.08, 0.08);
+  }
+  function sndRoar(){
+    tone(160, 0.3, 'sawtooth', 0.1);
+    tone(110, 0.35, 'sawtooth', 0.08, 0.08);
+  }
+  function sndShrink(){
+    tone(500, 0.08, 'sine', 0.08);
+    tone(380, 0.1, 'sine', 0.07, 0.06);
+    tone(280, 0.12, 'sine', 0.06, 0.12);
+  }
+  function vibrate(ms){
+    if (navigator.vibrate) navigator.vibrate(ms);
+  }
+
+
+  var state = {
+    month:1, balance:0, totalSpent:0, totalPaid:0, totalInterest:0,
+    caughtThisMonth:0, selectedPay:null, activeEvent:null, promo0:false, monthsCarried:0
+  };
+
+  function fmt(n){ return '$' + Math.round(n).toLocaleString('es-CO'); }
+  function screen(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+  }
+
+  function runLoadingScreen(){
+    var bar = document.getElementById('loading-bar');
+    var pct = 0;
+    var iv = setInterval(function(){
+      pct += 8 + Math.random()*10;
+      if (pct >= 100){
+        pct = 100;
+        bar.style.width = '100%';
+        clearInterval(iv);
+        setTimeout(function(){ screen('screen-intro'); }, 250);
+        return;
+      }
+      bar.style.width = pct + '%';
+    }, 90);
+  }
+  runLoadingScreen();
+
+  function buildTrack(){
+    var track = document.getElementById('month-track');
+    track.innerHTML = '';
+    for (var i=1;i<=MONTHS;i++){
+      var dot = document.createElement('div');
+      dot.className = 'month-dot';
+      if (i < state.month) dot.classList.add('done');
+      if (i === state.month) dot.classList.add('now');
+      track.appendChild(dot);
+    }
+  }
+
+  function renderCard(){
+    document.getElementById('month-label').textContent = 'Mes ' + state.month + ' / ' + MONTHS;
+    document.getElementById('card-balance').textContent = fmt(state.balance);
+    document.getElementById('stat-spent').textContent = fmt(state.totalSpent);
+    document.getElementById('stat-interest').textContent = fmt(state.totalInterest);
+
+    var card = document.getElementById('credit-card');
+    if (state.balance > 900) card.classList.add('danger'); else card.classList.remove('danger');
+
+    document.getElementById('card-apr-month').innerHTML = state.promo0
+      ? 'Interés mensual: <b>0% (promo)</b>'
+      : 'Interés mensual: <b>' + (MONTHLY_RATE*100).toFixed(2) + '%</b>';
+
+    var scale = Math.min(1.8, Math.max(0.75, 0.75 + state.balance/1400));
+    document.getElementById('monster').style.transform = 'scale(' + scale.toFixed(2) + ')';
+
+    buildTrack();
+  }
+
+  function maybeTriggerEvent(){
+    state.activeEvent = null;
+    state.promo0 = false;
+    var banner = document.getElementById('event-banner');
+    banner.classList.remove('show');
+    if (state.month > 1 && Math.random() < 0.4){
+      var ev = EVENTS[Math.floor(Math.random()*EVENTS.length)];
+      state.activeEvent = ev;
+      document.getElementById('event-text').innerHTML = ev.text;
+      banner.classList.add('show');
+      if (ev.type === 'fee' || ev.type === 'medical') state.balance += ev.value;
+      if (ev.type === 'promo0') state.promo0 = true;
+    }
+  }
+
+  /* ================= FASE 1: ARENA DE ATRAPADA ================= */
+  var arena, monoEl, monoShadowEl, timerBar, caughtTotalEl;
+  var monoX = 0, monoSpeed = 240, arenaWidth = 0, monoWidth = 46;
+  var movingLeft = false, movingRight = false, facing = 1;
+  var items = [], spawnTimer = null, rafId = null;
+  var catchStart = 0, catchRunning = false;
+
+  function initArenaRefs(){
+    arena = document.getElementById('arena');
+    monoEl = document.getElementById('mono-sprite');
+    monoShadowEl = document.getElementById('mono-shadow');
+    timerBar = document.getElementById('timer-bar');
+    caughtTotalEl = document.getElementById('caught-total');
+  }
+
+  function startCatchPhase(){
+    document.getElementById('catch-zone').style.display = 'block';
+    document.getElementById('pay-zone').style.display = 'none';
+    state.caughtThisMonth = 0;
+    caughtTotalEl.textContent = '$0';
+    items.forEach(function(it){ if(it.el && it.el.parentNode) it.el.parentNode.removeChild(it.el); });
+    items = [];
+    arenaWidth = arena.clientWidth;
+    monoX = arenaWidth/2 - monoWidth/2;
+    monoEl.style.left = monoX + 'px';
+
+    SPAWN_POOL = buildSpawnPool(state.month);
+    var theme = MONTH_THEMES[state.month];
+    var themeLabelEl = document.getElementById('month-theme');
+    if (theme){
+      themeLabelEl.textContent = theme.emoji + ' ' + theme.label;
+      themeLabelEl.style.display = 'block';
+    } else {
+      themeLabelEl.style.display = 'none';
+    }
+
+    catchStart = performance.now();
+    catchRunning = true;
+    timerBar.style.width = '100%';
+
+    var spawnInterval = Math.max(620, 950 - state.month*22);
+    spawnTimer = setInterval(spawnItem, spawnInterval);
+    rafId = requestAnimationFrame(catchLoop);
+  }
+
+  function spawnItem(){
+    if (!catchRunning) return;
+    var type = SPAWN_POOL[Math.floor(Math.random()*SPAWN_POOL.length)];
+    var el = document.createElement('div');
+    el.className = 'arena-item' + (type.necesidad ? ' necesidad' : '');
+    el.textContent = type.emoji;
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = '$' + type.amt;
+    el.appendChild(tag);
+    var x = 10 + Math.random()*(arenaWidth-40);
+    el.style.left = x + 'px';
+    el.style.top = '-30px';
+    arena.appendChild(el);
+    var speed = Math.min(115, 62 + Math.random()*32 + state.month*2);
+    items.push({ el:el, x:x, y:-30, speed:speed, type:type, caught:false });
+  }
+
+  function catchLoop(now){
+    if (!catchRunning) return;
+    var elapsed = (now - catchStart) / 1000;
+    var remaining = Math.max(0, CATCH_SECONDS - elapsed);
+    timerBar.style.width = (remaining/CATCH_SECONDS*100) + '%';
+
+    if (dragActive && dragTargetX !== null){
+      var diff = dragTargetX - monoX;
+      if (Math.abs(diff) > 2){
+        facing = diff > 0 ? 1 : -1;
+        var step = Math.min(Math.abs(diff), monoSpeed/60*1.6);
+        monoX += diff > 0 ? step : -step;
+      }
+    } else {
+      if (movingLeft && !movingRight){ monoX -= monoSpeed/60; facing=-1; }
+      if (movingRight && !movingLeft){ monoX += monoSpeed/60; facing=1; }
+    }
+    monoX = Math.max(0, Math.min(arenaWidth-monoWidth, monoX));
+    monoEl.style.left = monoX + 'px';
+    monoEl.classList.toggle('flip', facing===-1);
+    if (monoShadowEl) monoShadowEl.style.left = (monoX + monoWidth/2 - 20) + 'px';
+
+    var arenaHeight = arena.clientHeight;
+    for (var i=items.length-1;i>=0;i--){
+      var it = items[i];
+      it.y += it.speed/60;
+      it.el.style.top = it.y + 'px';
+
+      var monoCenter = monoX + monoWidth/2;
+      var itemCenter = it.x + 13;
+      if (!it.caught && it.y > arenaHeight-56 && it.y < arenaHeight-8 && Math.abs(monoCenter-itemCenter) < 30){
+        it.caught = true;
+        state.caughtThisMonth += it.type.amt;
+        caughtTotalEl.textContent = fmt(state.caughtThisMonth);
+        spawnPop(it.x, it.y, '+' + fmt(it.type.amt));
+        spawnCoinBurst(it.x+13, it.y+13);
+        sndCatch(it.type.necesidad);
+        vibrate(15);
+        monoEl.style.setProperty('--fx', facing===-1 ? -1 : 1);
+        monoEl.classList.remove('bounce'); void monoEl.offsetWidth; monoEl.classList.add('bounce');
+        it.el.parentNode.removeChild(it.el);
+        items.splice(i,1);
+        continue;
+      }
+      if (it.y > arenaHeight){
+        it.el.parentNode.removeChild(it.el);
+        items.splice(i,1);
+      }
+    }
+
+    if (remaining <= 0){ endCatchPhase(); return; }
+    rafId = requestAnimationFrame(catchLoop);
+  }
+
+  function spawnPop(x,y,text){
+    var pop = document.createElement('div');
+    pop.className = 'catch-pop';
+    pop.textContent = text;
+    pop.style.left = x + 'px';
+    pop.style.top = y + 'px';
+    arena.appendChild(pop);
+    setTimeout(function(){ if(pop.parentNode) pop.parentNode.removeChild(pop); }, 650);
+  }
+
+  function spawnCoinBurst(x,y){
+    var n = 5;
+    for (var i=0;i<n;i++){
+      var p = document.createElement('div');
+      p.className = 'coin-particle';
+      p.textContent = '🪙';
+      var angle = (Math.PI*2*i/n) + Math.random()*0.6;
+      var dist = 24 + Math.random()*18;
+      p.style.setProperty('--dx', (Math.cos(angle)*dist) + 'px');
+      p.style.setProperty('--dy', (Math.sin(angle)*dist - 10) + 'px');
+      p.style.left = x + 'px';
+      p.style.top = y + 'px';
+      arena.appendChild(p);
+      (function(el){ setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 560); })(p);
+    }
+  }
+
+  function endCatchPhase(){
+    catchRunning = false;
+    clearInterval(spawnTimer);
+    cancelAnimationFrame(rafId);
+    items.forEach(function(it){ if(it.el.parentNode) it.el.parentNode.removeChild(it.el); });
+    items = [];
+
+    state.balance += state.caughtThisMonth;
+    state.totalSpent += state.caughtThisMonth;
+    renderCard();
+
+    document.getElementById('catch-zone').style.display = 'none';
+    document.getElementById('pay-zone').style.display = 'block';
+    renderPayOptions();
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.key==='ArrowLeft'||e.key==='a'||e.key==='A') movingLeft = true;
+    if (e.key==='ArrowRight'||e.key==='d'||e.key==='D') movingRight = true;
+  });
+  document.addEventListener('keyup', function(e){
+    if (e.key==='ArrowLeft'||e.key==='a'||e.key==='A') movingLeft = false;
+    if (e.key==='ArrowRight'||e.key==='d'||e.key==='D') movingRight = false;
+  });
+
+  function bindTouchBtn(id, setter){
+    var el = document.getElementById(id);
+    ['mousedown','touchstart'].forEach(function(ev){
+      el.addEventListener(ev, function(e){ e.preventDefault(); setter(true); });
+    });
+    ['mouseup','mouseleave','touchend','touchcancel'].forEach(function(ev){
+      el.addEventListener(ev, function(e){ setter(false); });
+    });
+  }
+
+  var dragActive = false;
+  var dragTargetX = null;
+
+  function pointerXFromEvent(e){
+    var rect = arena.getBoundingClientRect();
+    var clientX = (e.touches && e.touches.length) ? e.touches[0].clientX : e.clientX;
+    return clientX - rect.left;
+  }
+
+  function bindArenaDrag(){
+    function onStart(e){
+      if (!catchRunning) return;
+      dragActive = true;
+      movingLeft = false; movingRight = false;
+      dragTargetX = pointerXFromEvent(e) - monoWidth/2;
+    }
+    function onMove(e){
+      if (!dragActive || !catchRunning) return;
+      e.preventDefault();
+      dragTargetX = pointerXFromEvent(e) - monoWidth/2;
+    }
+    function onEnd(){
+      dragActive = false;
+      dragTargetX = null;
+    }
+    arena.addEventListener('touchstart', onStart, { passive:true });
+    arena.addEventListener('touchmove', onMove, { passive:false });
+    arena.addEventListener('touchend', onEnd);
+    arena.addEventListener('touchcancel', onEnd);
+    arena.addEventListener('mousedown', onStart);
+    arena.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+  }
+
+  /* ================= FASE 2: PAGO ================= */
+  function renderPayOptions(){
+    var wrap = document.getElementById('pay-options');
+    wrap.innerHTML = '';
+    state.selectedPay = null;
+    var projectedBalance = state.balance;
+    var minPay = Math.max(25, Math.round(projectedBalance * 0.05));
+    var options = [
+      { id:'min', name:'Pago mínimo', sub:'Lo justo para no caer en mora', amt:Math.min(minPay, projectedBalance) },
+      { id:'fixed', name:'Pago fijo', sub:'Un esfuerzo moderado', amt:Math.min(Math.round(projectedBalance*0.35), projectedBalance) },
+      { id:'full', name:'Pagar todo', sub:'Saldas el saldo completo este mes', amt:projectedBalance }
+    ];
+    options.forEach(function(opt){
+      var row = document.createElement('button');
+      row.type='button'; row.className='pay-option';
+      row.innerHTML = '<div><div class="name">'+opt.name+'</div><div class="sub">'+opt.sub+'</div></div><div class="amt">'+fmt(opt.amt)+'</div>';
+      row.addEventListener('click', function(){
+        document.querySelectorAll('.pay-option').forEach(function(c){ c.classList.remove('selected'); });
+        row.classList.add('selected');
+        state.selectedPay = opt;
+        document.getElementById('btn-pay').disabled = false;
+      });
+      wrap.appendChild(row);
+    });
+    document.getElementById('btn-pay').disabled = true;
+  }
+
+  function throwBanana(cb){
+    var monoRect = monoEl.getBoundingClientRect();
+    var monsterRect = document.getElementById('monster').getBoundingClientRect();
+    var b = document.createElement('div');
+    b.className = 'banana';
+    b.textContent = '🍌';
+    b.style.left = monoRect.left + 'px';
+    b.style.top = monoRect.top + 'px';
+    document.body.appendChild(b);
+    requestAnimationFrame(function(){
+      b.style.left = monsterRect.left + 'px';
+      b.style.top = monsterRect.top + 'px';
+      b.style.opacity = '0';
+    });
+    setTimeout(function(){ if(b.parentNode) b.parentNode.removeChild(b); if(cb) cb(); }, 480);
+  }
+
+  function payAndAdvance(){
+    document.getElementById('btn-pay').disabled = true;
+    var bonus = (state.activeEvent && state.activeEvent.type === 'bonus') ? state.activeEvent.value : 0;
+    var pay = Math.min(state.selectedPay.amt + bonus, state.balance);
+    state.balance -= pay;
+    state.totalPaid += pay;
+    sndPay();
+    vibrate(25);
+
+    throwBanana(function(){
+      var monster = document.getElementById('monster');
+      monster.classList.remove('grow'); monster.classList.add('shrink');
+      sndShrink();
+      setTimeout(function(){ monster.classList.remove('shrink'); }, 500);
+      renderCard();
+
+      setTimeout(function(){
+        var interest = state.promo0 ? 0 : state.balance * MONTHLY_RATE;
+        interest = Math.round(interest);
+        state.balance += interest;
+        state.totalInterest += interest;
+        if (state.balance > 0) state.monthsCarried += 1;
+
+        if (interest > 0){
+          monster.classList.add('grow');
+          sndRoar();
+          vibrate([20,30,20]);
+          var stageEl = document.getElementById('stage');
+          stageEl.classList.remove('shake'); void stageEl.offsetWidth; stageEl.classList.add('shake');
+          setTimeout(function(){ monster.classList.remove('grow'); }, 500);
+        }
+        renderCard();
+
+        setTimeout(function(){
+          if (state.month >= MONTHS){ showSummary(); return; }
+          state.month += 1;
+          renderCard();
+          maybeTriggerEvent();
+          startCatchPhase();
+        }, 550);
+      }, 500);
+    });
+  }
+
+  /* ================= RESUMEN ================= */
+  function showSummary(){
+    screen('screen-summary');
+    document.getElementById('sum-spent').textContent = fmt(state.totalSpent);
+    document.getElementById('sum-interest').textContent = fmt(state.totalInterest);
+    document.getElementById('sum-paid').textContent = fmt(state.totalPaid);
+    document.getElementById('sum-balance').textContent = fmt(state.balance);
+
+    var title, lead, lesson, hex, cls;
+
+    if (state.monthsCarried === 0){
+      title='Le ganaste a la trampa';
+      lead='Ningún mes terminó con saldo pendiente — nunca le diste tiempo al interés de morder. Pagaste ' + fmt(state.totalInterest) + ' en intereses en total.';
+      lesson='La clave que usaste: pagar el saldo completo cada mes evita que el interés compuesto se acumule. <b>Cuando pagas todo antes de que cierre el mes, el crédito es prácticamente gratis.</b>';
+      hex='🐒'; cls='good';
+    } else if (state.monthsCarried <= 4){
+      title='Saliste bien parado';
+      lead='Dejaste saldo pendiente en ' + state.monthsCarried + ' de 12 meses, y eso te costó ' + fmt(state.totalInterest) + ' en intereses.';
+      lesson='Cada mes que dejaste algo sin pagar, el monstruo se llevó un poco más. <b>Entre menos meses cargues saldo, menos gana el banco.</b>';
+      hex='🙂'; cls='good';
+    } else {
+      title='Caíste en la trampa del interés';
+      lead='Cargaste saldo pendiente en ' + state.monthsCarried + ' de 12 meses — eso disparó tu interés a ' + fmt(state.totalInterest) + '.';
+      lesson='Pagar el mínimo se siente cómodo mes a mes, pero cada mes que dejas saldo pendiente <b>el interés se calcula otra vez sobre una deuda más grande</b>. Así es como una deuda pequeña se vuelve grande sin que lo notes.';
+      hex='😬'; cls='bad';
+    }
+
+    document.getElementById('summary-hex').textContent = hex;
+    document.getElementById('summary-title').textContent = title;
+    document.getElementById('summary-lead').textContent = lead;
+    document.getElementById('lesson-text').innerHTML = lesson;
+    document.getElementById('sum-balance-box').className = 'stat ' + cls;
+
+    // récord personal: menor interés pagado en toda la partida
+    var recordBox = document.getElementById('record-box');
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem('mm-trampa-record')); } catch(e){ stored = null; }
+    var isNewRecord = !stored || state.totalInterest < stored.interest;
+    if (isNewRecord){
+      try { localStorage.setItem('mm-trampa-record', JSON.stringify({ interest: state.totalInterest, spent: state.totalSpent })); } catch(e){}
+      recordBox.className = 'record-box new-record';
+      recordBox.innerHTML = '🏆 <b>¡Nuevo récord personal!</b> Interés pagado: ' + fmt(state.totalInterest);
+    } else {
+      recordBox.className = 'record-box';
+      recordBox.innerHTML = 'Tu mejor resultado hasta ahora: <b>' + fmt(stored.interest) + '</b> de interés pagado';
+    }
+
+    state.shareText = (title + '. Jugué "La Trampa del Interés" de MonkeyMoney: gasté ' + fmt(state.totalSpent) +
+      ' y terminé pagando ' + fmt(state.totalInterest) + ' extra en intereses. 🐒 ¿Le ganas tú al interés?');
+  }
+
+  function shareResult(){
+    var text = state.shareText || 'Jugué La Trampa del Interés de MonkeyMoney 🐒';
+    if (navigator.share){
+      navigator.share({ title:'La Trampa del Interés — MonkeyMoney', text:text }).catch(function(){});
+    } else if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(function(){
+        var btn = document.getElementById('btn-share');
+        var original = btn.textContent;
+        btn.textContent = '¡Copiado!';
+        setTimeout(function(){ btn.textContent = original; }, 1500);
+      }).catch(function(){});
+    }
+  }
+
+  function resetGame(){
+    state = { month:1, balance:0, totalSpent:0, totalPaid:0, totalInterest:0, caughtThisMonth:0, selectedPay:null, activeEvent:null, promo0:false, monthsCarried:0 };
+    screen('screen-game');
+    document.getElementById('monster').style.transform = 'scale(0.75)';
+    renderCard();
+    maybeTriggerEvent();
+    startCatchPhase();
+  }
+
+  document.getElementById('btn-start').addEventListener('click', function(){
+    var ctxA = ac();
+    if (ctxA && ctxA.state === 'suspended') ctxA.resume();
+    initArenaRefs();
+    bindTouchBtn('btn-left', function(v){ movingLeft = v; });
+    bindTouchBtn('btn-right', function(v){ movingRight = v; });
+    bindArenaDrag();
+    resetGame();
+  });
+  document.getElementById('btn-pay').addEventListener('click', payAndAdvance);
+  document.getElementById('btn-restart').addEventListener('click', resetGame);
+  document.getElementById('btn-share').addEventListener('click', shareResult);
+
+  window.addEventListener('resize', function(){
+    if (arena) arenaWidth = arena.clientWidth;
+  });
+})();
+</script>
+</body>
+</html>
