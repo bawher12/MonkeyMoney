@@ -11,9 +11,9 @@
     "desc_en": "Split a monthly income between expenses, savings, and debt. See what happens when the budget doesn't add up."
   },
   {
-    "id": "trampa-del-interes",
-    "file": "",
-    "status": "proximamente",
+    "id": "Trampa-Del-Interes",
+    "file": "la-trampa-del-interes.html",
+    "status": "disponible",
     "category": "Finanzas personales",
     "category_en": "Personal finance",
     "title_es": "La Trampa del Interés",
