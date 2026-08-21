@@ -106,7 +106,7 @@
 
   function showWelcomeIfEmpty() {
     if (history.length === 0) {
-      addMessage('bot', '¡Hola! Soy el asistente de MonkeyMoney 🐵 Pregúntame lo que quieras sobre ahorro, tarjetas, presupuesto o cualquier duda financiera.');
+      addMessage('bot', '¡Hola! Soy MonkeyMoney 🐵 Pregúntame lo que quieras sobre ahorro, tarjetas, presupuesto o cualquier duda financiera.');
     }
   }
 
@@ -135,7 +135,7 @@
 
     var typingEl = document.createElement('div');
     typingEl.className = 'mm-msg typing';
-    typingEl.textContent = 'Mono está escribiendo...';
+    typingEl.textContent = 'Monkey está escribiendo...';
     messagesEl.appendChild(typingEl);
     messagesEl.scrollTop = messagesEl.scrollHeight;
 
