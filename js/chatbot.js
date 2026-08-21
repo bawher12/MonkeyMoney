@@ -19,14 +19,14 @@
   var style = document.createElement('style');
   style.textContent = `
     .mm-chat-btn {
-      position: fixed; bottom: 20px; right: 92px; z-index: 9998;
-      display: flex; align-items: center; gap: 8px;
+      position: fixed; bottom: 20px; right: 84px; z-index: 9998;
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
       background: #0a0a0a; color: #b6ff3c; border: 2px solid #b6ff3c;
-      border-radius: 999px; padding: 10px 16px;
-      font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600;
+      border-radius: 50%; font-size: 22px;
       cursor: pointer; box-shadow: 4px 4px 0 #ff3ccb; transition: transform .12s ease;
     }
-    .mm-chat-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #ff3ccb; }
+    .mm-chat-btn:hover { transform: translate(-2px,-2px) scale(1.05); box-shadow: 6px 6px 0 #ff3ccb; }
 
     .mm-chat-panel {
       display: none; position: fixed; bottom: 78px; right: 20px; z-index: 9998;
@@ -71,7 +71,8 @@
 
   var btn = document.createElement('button');
   btn.className = 'mm-chat-btn';
-  btn.innerHTML = '<span>🐵</span><span>Pregúntame</span>';
+  btn.setAttribute('aria-label', 'Preguntar a MonkeyMoney');
+  btn.innerHTML = '🐵';
 
   var panel = document.createElement('div');
   panel.className = 'mm-chat-panel';
@@ -106,7 +107,7 @@
 
   function showWelcomeIfEmpty() {
     if (history.length === 0) {
-      addMessage('bot', '¡Hola! Soy MonkeyMoney 🐵 Pregúntame lo que quieras sobre ahorro, tarjetas, presupuesto o cualquier duda financiera.');
+      addMessage('bot', '¡Hola! Soy el asistente de MonkeyMoney 🐵 Pregúntame lo que quieras sobre ahorro, tarjetas, presupuesto o cualquier duda financiera.');
     }
   }
 
@@ -135,7 +136,7 @@
 
     var typingEl = document.createElement('div');
     typingEl.className = 'mm-msg typing';
-    typingEl.textContent = 'Monkey está escribiendo...';
+    typingEl.textContent = 'Mono está escribiendo...';
     messagesEl.appendChild(typingEl);
     messagesEl.scrollTop = messagesEl.scrollHeight;
 
