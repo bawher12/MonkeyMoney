@@ -19,21 +19,22 @@
   var style = document.createElement('style');
   style.textContent = `
     .mm-chat-btn {
-      position: fixed; bottom: 20px; right: 84px; z-index: 9998;
+      position: fixed; bottom: 84px; right: 20px; z-index: 9998;
       width: 52px; height: 52px;
       display: flex; align-items: center; justify-content: center;
       background: #0a0a0a; color: #b6ff3c; border: 2px solid #b6ff3c;
-      border-radius: 50%; font-size: 22px;
+      border-radius: 50%; font-size: 26px; overflow: hidden;
       cursor: pointer; box-shadow: 4px 4px 0 #ff3ccb; transition: transform .12s ease;
     }
     .mm-chat-btn:hover { transform: translate(-2px,-2px) scale(1.05); box-shadow: 6px 6px 0 #ff3ccb; }
 
     .mm-chat-panel {
-      display: none; position: fixed; bottom: 78px; right: 20px; z-index: 9998;
+      display: none; flex-direction: column;
+      position: fixed; bottom: 144px; right: 20px; z-index: 9998;
       width: 320px; max-width: calc(100vw - 40px); height: 420px;
       background: #0a0a0a; border: 2px solid #b6ff3c; border-radius: 18px;
       box-shadow: 6px 6px 0 #ff3ccb; overflow: hidden;
-      display: flex; flex-direction: column; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
     }
     .mm-chat-panel.open { display: flex; }
 
