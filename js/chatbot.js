@@ -10,7 +10,7 @@
    ============================================================ */
 
 (function () {
-  var WORKER_URL = 'https://mm-chatbot-worker.TU-USUARIO.workers.dev';
+  var WORKER_URL = 'https://1144034881.workers.dev';
 
   var history = []; // { role: 'user'|'bot', text: '...' }
   var isOpen = false;
