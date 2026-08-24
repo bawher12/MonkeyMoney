@@ -1,32 +1,55 @@
 /* ============================================================
    MonkeyMoney - Widget de chat flotante
-   ============================================================
-   Cómo usarlo:
-   1. Reemplaza WORKER_URL abajo por la URL que te dio Wrangler
-      al desplegar el Worker (paso 3 de la guía).
-   2. Sube este archivo a /js/chatbot.js
-   3. En cada página, antes de </body>:
-        <script src="js/chatbot.js"></script>
    ============================================================ */
 
 (function () {
   var WORKER_URL = 'https://monkeymoney.1144034881.workers.dev';
+  var BOT_IMG = 'assets/botmo.png'; // <-- sube Botmo.png a esta ruta en tu repo
 
-  var history = []; // { role: 'user'|'bot', text: '...' }
+  var history = [];
   var isOpen = false;
   var isSending = false;
 
   var style = document.createElement('style');
   style.textContent = `
+    @keyframes mm-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes mm-glow {
+      0%, 100% { box-shadow: 4px 4px 0 #ff3ccb, 0 0 0px rgba(182,255,60,0.0); }
+      50% { box-shadow: 4px 4px 0 #ff3ccb, 0 0 18px rgba(182,255,60,0.65); }
+    }
+    @keyframes mm-blink {
+      0%, 96%, 100% { transform: scaleY(0); }
+      98% { transform: scaleY(1); }
+    }
+
     .mm-chat-btn {
       position: fixed; bottom: 84px; right: 20px; z-index: 9998;
-      width: 52px; height: 52px;
+      width: 56px; height: 56px;
       display: flex; align-items: center; justify-content: center;
-      background: #0a0a0a; color: #b6ff3c; border: 2px solid #b6ff3c;
-      border-radius: 50%; font-size: 26px; overflow: hidden;
-      cursor: pointer; box-shadow: 4px 4px 0 #ff3ccb; transition: transform .12s ease;
+      background: #0a0a0a; border: 2px solid #b6ff3c;
+      border-radius: 50%; overflow: visible;
+      cursor: pointer; transition: transform .12s ease;
+      animation: mm-float 3s ease-in-out infinite, mm-glow 3s ease-in-out infinite;
     }
-    .mm-chat-btn:hover { transform: translate(-2px,-2px) scale(1.05); box-shadow: 6px 6px 0 #ff3ccb; }
+    .mm-chat-btn:hover { transform: translate(-2px,-2px) scale(1.05); }
+    .mm-chat-btn-inner {
+      position: relative; width: 100%; height: 100%;
+      border-radius: 50%; overflow: hidden;
+    }
+    .mm-chat-btn-inner img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    /* "parpados" simulados: dos franjas que bajan sobre los ojos */
+    .mm-eyelid {
+      position: absolute; left: 22%; width: 24%; height: 14%;
+      background: #d9a066; border-radius: 40%;
+      transform-origin: top center; transform: scaleY(0);
+      animation: mm-blink 5s ease-in-out infinite;
+    }
+    .mm-eyelid.right { left: 54%; }
 
     .mm-chat-panel {
       display: none; flex-direction: column;
@@ -40,11 +63,15 @@
 
     .mm-chat-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 14px; border-bottom: 1px solid #262626;
+      padding: 10px 14px; border-bottom: 1px solid #262626;
     }
     .mm-chat-header .title {
       font-family: 'Unbounded', sans-serif; font-size: 13px; color: #b6ff3c;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .mm-chat-header .title img {
+      width: 26px; height: 26px; border-radius: 50%; object-fit: cover;
+      animation: mm-float 3s ease-in-out infinite;
     }
     .mm-chat-header .close { background: none; border: none; color: #ff3ccb; font-size: 18px; cursor: pointer; }
 
@@ -73,13 +100,19 @@
   var btn = document.createElement('button');
   btn.className = 'mm-chat-btn';
   btn.setAttribute('aria-label', 'Preguntar a MonkeyMoney');
-  btn.innerHTML = '🐵';
+  btn.innerHTML = `
+    <div class="mm-chat-btn-inner">
+      <img src="${BOT_IMG}" alt="Monkey Money">
+      <div class="mm-eyelid left"></div>
+      <div class="mm-eyelid right"></div>
+    </div>
+  `;
 
   var panel = document.createElement('div');
   panel.className = 'mm-chat-panel';
   panel.innerHTML = `
     <div class="mm-chat-header">
-      <span class="title">🐵 Monkey Money</span>
+      <span class="title"><img src="${BOT_IMG}" alt=""> Monkey Money</span>
       <button class="close" aria-label="Cerrar chat">×</button>
     </div>
     <div class="mm-chat-messages" id="mm-chat-messages"></div>
@@ -157,14 +190,4 @@
         typingEl.remove();
         addMessage('bot', 'No pude conectarme ahora mismo. ¿Lo intentamos de nuevo en un momento?');
       })
-      .finally(function () {
-        isSending = false;
-        sendBtn.disabled = false;
-      });
-  }
-
-  sendBtn.addEventListener('click', sendMessage);
-  inputEl.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') sendMessage();
-  });
-})();
+      .finally(function ()
