@@ -84,18 +84,21 @@ export default {
       });
       contents.push({ role: 'user', parts: [{ text: userMessage }] });
 
-      const geminiResp = await fetch(
-        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + env.GEMINI_API_KEY,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents: contents,
-            generationConfig: { temperature: 0.8, maxOutputTokens: 400 }
-          })
-        }
-      );
+     const geminiResp = await fetch(
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${env.GEMINI_API_KEY}`
+    },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: contents,
+      generationConfig: { temperature: 0.8, maxOutputTokens: 400 }
+    })
+  }
+);
 
       if (!geminiResp.ok) {
         const errText = await geminiResp.text();
