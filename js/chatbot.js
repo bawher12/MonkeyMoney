@@ -79,12 +79,12 @@
   panel.className = 'mm-chat-panel';
   panel.innerHTML = `
     <div class="mm-chat-header">
-      <span class="title">🐵 MonkeyMoney</span>
+      <span class="title">🐵 Monkey Money</span>
       <button class="close" aria-label="Cerrar chat">×</button>
     </div>
     <div class="mm-chat-messages" id="mm-chat-messages"></div>
     <div class="mm-chat-input-row">
-      <input type="text" id="mm-chat-input" placeholder="Pregúntame sobre finanzas..." maxlength="300">
+      <input type="text" id="mm-chat-input" placeholder="Pregúntame sobre lana..." maxlength="300">
       <button id="mm-chat-send" aria-label="Enviar">➤</button>
     </div>
   `;
@@ -108,7 +108,7 @@
 
   function showWelcomeIfEmpty() {
     if (history.length === 0) {
-      addMessage('bot', '¡Hola! Soy el asistente de MonkeyMoney 🐵 Pregúntame lo que quieras sobre ahorro, tarjetas, presupuesto o cualquier duda financiera.');
+      addMessage('bot', '¡Hola! Soy Monkey 🐵 Pregúntame lo que quieras sobre ahorro, tarjetas, presupuesto o cualquier duda financiera.');
     }
   }
 
@@ -137,7 +137,7 @@
 
     var typingEl = document.createElement('div');
     typingEl.className = 'mm-msg typing';
-    typingEl.textContent = 'Mono está escribiendo...';
+    typingEl.textContent = 'Monkey está escribiendo...';
     messagesEl.appendChild(typingEl);
     messagesEl.scrollTop = messagesEl.scrollHeight;
 
@@ -149,7 +149,7 @@
       .then(function (r) { return r.json(); })
       .then(function (data) {
         typingEl.remove();
-        var reply = data.reply || 'Se me enredó el hilo, ¿me lo repites?';
+        var reply = data.reply || 'Se me enredó el mico, ¿me lo repites?';
         addMessage('bot', reply);
         history.push({ role: 'bot', text: reply });
       })
