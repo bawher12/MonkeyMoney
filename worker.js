@@ -85,7 +85,7 @@ export default {
       contents.push({ role: 'user', parts: [{ text: userMessage }] });
 
      const geminiResp = await fetch(
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+ 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=' + env.GEMINI_API_KEY,
   {
     method: "POST",
     headers: {
