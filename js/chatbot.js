@@ -190,4 +190,14 @@
         typingEl.remove();
         addMessage('bot', 'No pude conectarme ahora mismo. ¿Lo intentamos de nuevo en un momento?');
       })
-      .finally(function ()
+          .finally(function () {
+      isSending = false;
+      sendBtn.disabled = false;
+    });
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  inputEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') sendMessage();
+  });
+})();
