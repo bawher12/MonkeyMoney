@@ -44,12 +44,12 @@
     }
     /* "parpados" simulados: dos franjas que bajan sobre los ojos */
     .mm-eyelid {
-      position: absolute; left: 22%; width: 24%; height: 14%;
-      background: #d9a066; border-radius: 40%;
-      transform-origin: top center; transform: scaleY(0);
-      animation: mm-blink 5s ease-in-out infinite;
-    }
-    .mm-eyelid.right { left: 54%; }
+  position: absolute; top: 40%; left: 30%; width: 16%; height: 11%;
+  background: #dba876; border-radius: 40%;
+  transform-origin: top center; transform: scaleY(0);
+  animation: mm-blink 5s ease-in-out infinite;
+}
+.mm-eyelid.right { left: 55%; }
 
     .mm-chat-panel {
       display: none; flex-direction: column;
