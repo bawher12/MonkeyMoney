@@ -44,7 +44,7 @@
     }
     /* "parpados" simulados: dos franjas que bajan sobre los ojos */
     .mm-eyelid {
-  position: absolute; top: 46%; left: 30%; width: 16%; height: 11%;
+  position: absolute; top: 48%; left: 30%; width: 16%; height: 11%;
   background: #dba876; border-radius: 40%;
   transform-origin: top center; transform: scaleY(0);
   animation: mm-blink 5s ease-in-out infinite;
