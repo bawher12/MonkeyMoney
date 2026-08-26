@@ -13,19 +13,20 @@
     "desc_es": "Una introducción amable a presupuestar, ahorrar y salir de deudas, capítulo por capítulo. (PDF de ejemplo: remplaza el archivo en library/pdfs/ con el tuyo cuando lo tengas listo.)",
     "desc_en": "A friendly introduction to budgeting, saving, and getting out of debt, chapter by chapter. (Sample PDF — replace the file in library/pdfs/ with your own.)"
   },
-  {
-    "id": "flujo-de-caja-pymes",
-    "file": "flujo-de-caja-pymes.pdf",
-    "status": "disponible",
-    "type": "Artículo",
-    "type_en": "Article",
-    "category": "Finanzas empresariales",
-    "category_en": "Business finance",
-    "title_es": "Flujo de caja para negocios pequeños",
-    "title_en": "Cash flow for small businesses",
-    "desc_es": "Por qué un negocio rentable en papel puede quedarse sin dinero en la cuenta, y cómo evitarlo. (PDF de ejemplo: remplaza el archivo en library/pdfs/ con el tuyo.)",
-    "desc_en": "Why a business that's profitable on paper can still run out of cash, and how to avoid it. (Sample PDF — replace the file in library/pdfs/ with your own.)"
-  },
+ {
+  "id": "flujo-de-caja-pymes",
+  "file": "Flujo_de_Caja_para_Negocios_Pequenos.pdf",
+  "file_en": "Cash_Flow_for_Small_Businesses.pdf",
+  "status": "disponible",
+  "type": "Libro",
+  "type_en": "Book",
+  "category": "Finanzas empresariales",
+  "category_en": "Business finance",
+  "title_es": "Flujo de Caja para Negocios Pequeños",
+  "title_en": "Cash Flow for Small Businesses",
+  "desc_es": "Mika, dueña de un carrito de café, cuenta cómo casi cierra su negocio ganando más dinero que nunca — y el sistema que armó para que eso no vuelva a pasar.",
+  "desc_en": "Mika, owner of a coffee cart, shares how she almost closed her business while earning more money than ever — and the system she built so it never happens again."
+},
   {
     "id": "invertir-sin-panico",
     "file": "",
