@@ -10,21 +10,20 @@
     return (window.mmI18n && window.mmI18n.t(key)) || key;
   }
 
-  function cardHtml(item) {
+function cardHtml(item) {
     const lang = currentLang();
     const title = lang === "en" ? item.title_en : item.title_es;
     const desc = lang === "en" ? item.desc_en : item.desc_es;
     const type = lang === "en" ? item.type_en : item.type;
     const file = (lang === "en" && item.file_en) ? item.file_en : item.file;
-    const available = item.status === "disponible" && item.file;
+    const available = item.status === "disponible" && file;
     const statusLabel = available ? t("library.label.available") : t("library.label.soon");
     const stampClass = available ? "stamp-done" : "stamp-soon";
     const stampText = available ? "OK" : "SOON";
 
     const action = available
-      ? `<a href="reader.html?file=${encodeURIComponent(item.file)}&title=${encodeURIComponent(title)}" class="btn btn-primary">${t("library.btn.read")}</a>`
+      ? `<a href="reader.html?file=${encodeURIComponent(file)}&title=${encodeURIComponent(title)}" class="btn btn-primary">${t("library.btn.read")}</a>`
       : `<span class="btn btn-secondary">${t("library.btn.soon")}</span>`;
-
     return `
       <div class="content-card${available ? "" : " disabled"}">
         <div class="content-card-top">
