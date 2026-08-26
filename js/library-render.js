@@ -15,6 +15,7 @@
     const title = lang === "en" ? item.title_en : item.title_es;
     const desc = lang === "en" ? item.desc_en : item.desc_es;
     const type = lang === "en" ? item.type_en : item.type;
+    const file = (lang === "en" && item.file_en) ? item.file_en : item.file;
     const available = item.status === "disponible" && item.file;
     const statusLabel = available ? t("library.label.available") : t("library.label.soon");
     const stampClass = available ? "stamp-done" : "stamp-soon";
