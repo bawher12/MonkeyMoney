@@ -46,7 +46,7 @@ function cardHtml(item) {
     listEl.innerHTML = catalog.map(cardHtml).join("");
   }
 
-  fetch("data/library.json")
+  fetch("data/library.json", { cache: "no-store" })
     .then((res) => res.json())
     .then((data) => {
       catalog = data;
