@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leer — MonkeyMoney</title>
+<title>Leer — Monkey Money</title>
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,12 +120,15 @@
   import * as pdfjsLib from "./js/vendor/pdfjs/pdf.min.mjs";
   pdfjsLib.GlobalWorkerOptions.workerSrc = "./js/vendor/pdfjs/pdf.worker.min.mjs";
 
-  const params = new URLSearchParams(window.location.search);
-  const file = params.get("file");
-  const title = params.get("title") || "Documento";
-  document.getElementById("doc-title").textContent = title;
-  document.title = `${title} — MonkeyMoney`;
+  function currentLang() {
+    return document.documentElement.getAttribute("lang") === "en" ? "en" : "es";
+  }
 
+  const params = new URLSearchParams(window.location.search);
+  const initialFile = params.get("file");
+  const initialTitle = params.get("title") || "Documento";
+
+  const titleEl = document.getElementById("doc-title");
   const stage = document.getElementById("pdf-stage");
   const loadingEl = document.getElementById("pdf-loading");
   const controls = document.getElementById("pdf-controls");
@@ -137,10 +140,17 @@
   let pdfDoc = null;
   let currentPage = 1;
   let canvas = null;
+  let currentItem = null;
+  let currentFileLoaded = null;
 
   function showError(msg) {
-    loadingEl.textContent = msg;
-    loadingEl.classList.add("pdf-error");
+    stage.innerHTML = `<div class="pdf-loading pdf-error">${msg}</div>`;
+    canvas = null;
+  }
+
+  function showLoading() {
+    stage.innerHTML = `<div class="pdf-loading" id="pdf-loading">Cargando documento…</div>`;
+    canvas = null;
   }
 
   async function renderPage(num) {
@@ -160,6 +170,29 @@
     nextBtn.disabled = num >= pdfDoc.numPages;
   }
 
+  async function loadFile(file, title) {
+    if (!file || file === currentFileLoaded) return;
+    currentFileLoaded = file;
+    currentPage = 1;
+    titleEl.textContent = title;
+    document.title = `${title} — MonkeyMoney`;
+    showLoading();
+    try {
+      const url = `library/pdfs/${file}`;
+      pdfDoc = await pdfjsLib.getDocument(url).promise;
+      pageCountEl.textContent = pdfDoc.numPages;
+      controls.style.display = pdfDoc.numPages > 1 ? "flex" : "none";
+      await renderPage(1);
+      const url2 = new URL(window.location.href);
+      url2.searchParams.set("file", file);
+      url2.searchParams.set("title", title);
+      window.history.replaceState({}, "", url2);
+    } catch (err) {
+      console.error(err);
+      showError("No se pudo cargar este documento todavía.");
+    }
+  }
+
   prevBtn.addEventListener("click", () => {
     if (currentPage > 1) { currentPage -= 1; renderPage(currentPage); }
   });
@@ -167,19 +200,28 @@
     if (currentPage < pdfDoc.numPages) { currentPage += 1; renderPage(currentPage); }
   });
 
+  function applyLangToCurrentItem() {
+    if (!currentItem) return;
+    const lang = currentLang();
+    const file = (lang === "en" && currentItem.file_en) ? currentItem.file_en : currentItem.file;
+    const title = (lang === "en" && currentItem.title_en) ? currentItem.title_en : currentItem.title_es;
+    loadFile(file, title);
+  }
+
   (async () => {
-    if (!file) { showError("No se especificó ningún documento."); return; }
+    if (!initialFile) { showError("No se especificó ningún documento."); return; }
+    await loadFile(initialFile, initialTitle);
+
     try {
-      const url = `library/pdfs/${file}`;
-      pdfDoc = await pdfjsLib.getDocument(url).promise;
-      pageCountEl.textContent = pdfDoc.numPages;
-      controls.style.display = pdfDoc.numPages > 1 ? "flex" : "none";
-      await renderPage(1);
+      const res = await fetch("data/library.json?v=" + Date.now(), { cache: "no-store" });
+      const data = await res.json();
+      currentItem = data.find((it) => it.file === initialFile || it.file_en === initialFile) || null;
     } catch (err) {
       console.error(err);
-      showError("No se pudo cargar este documento todavía.");
     }
   })();
+
+  document.addEventListener("mm:lang-changed", applyLangToCurrentItem);
 </script>
   <script src="js/player.js"></script>
   <script src="js/chatbot.js"></script>
