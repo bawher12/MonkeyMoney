@@ -27,19 +27,20 @@
   "desc_es": "Mika, dueña de un carrito de café, cuenta cómo casi cierra su negocio ganando más dinero que nunca — y el sistema que armó para que eso no vuelva a pasar.",
   "desc_en": "Mika, owner of a coffee cart, shares how she almost closed her business while earning more money than ever — and the system she built so it never happens again."
 },
-  {
-    "id": "invertir-sin-panico",
-    "file": "",
-    "status": "proximamente",
-    "type": "Guía",
-    "type_en": "Guide",
-    "category": "Inversión",
-    "category_en": "Investing",
-    "title_es": "Invertir sin pánico",
-    "title_en": "Investing without panic",
-    "desc_es": "Los conceptos básicos de invertir a largo plazo, sin jerga innecesaria.",
-    "desc_en": "The basics of long-term investing, without unnecessary jargon."
-  },
+ {
+  "id": "invertir-sin-panico",
+  "file": "Invertir_sin_Panico.pdf",
+  "file_en": "Investing_Without_Panic.pdf",
+  "status": "disponible",
+  "type": "Libro",
+  "type_en": "Book",
+  "category": "Inversión",
+  "category_en": "Investing",
+  "title_es": "Invertir sin Pánico",
+  "title_en": "Investing Without Panic",
+  "desc_es": "Rocky, guitarrista de rock, cuenta cómo aprendió a invertir a largo plazo sin dejar que el pánico del mercado tome las decisiones por él.",
+  "desc_en": "Rocky, a rock guitarist, shares how he learned to invest for the long term without letting market panic make his decisions for him."
+}
   {
     "id": "guia-monkey-principiantes",
     "file": "Monkey Money - Guia de Inversion para Principiantes.pdf",
