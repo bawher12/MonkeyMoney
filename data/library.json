@@ -86,6 +86,7 @@
   {
     "id": "el-mono-que-imprime",
     "file": "printing-monkey.pdf",
+     "file_en": "Printing_Monkey_EN.pdf",
     "status": "disponible",
     "type": "Libro",
     "type_en": "Book",
@@ -99,6 +100,7 @@
   {
     "id": "el-sistema-del-mono",
     "file": "El Sistema Del Mono.pdf",
+     "file_en": "Printing_Monkey_EN.pdf",
     "status": "disponible",
     "type": "Libro",
     "type_en": "Book",
