@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analizador Monkey Money</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+<header class="site-header" aria-label="Navegación de Monkey Money">
+  <div class="site-header-inner">
+    <a class="site-brand" href="https://monkeymoney.com.co/" aria-label="Monkey Money - Inicio">
+      <span class="site-brand-avatar"><img src="assets/logo-monkeymoney-user.png" alt="Monkey Money"></span>
+      <span class="site-brand-name">MonkeyMoney</span>
+    </a>
+    <button class="site-nav-toggle" id="siteNavToggle" aria-expanded="false" aria-controls="siteNav" aria-label="Abrir menú de Monkey Money">☰</button>
+    <nav class="site-nav" id="siteNav">
+      <a href="https://monkeymoney.com.co/">Inicio</a>
+      <a href="https://monkeymoney.com.co/juegos.html">Juegos</a>
+      <a href="https://monkeymoney.com.co/biblioteca.html">Biblioteca</a>
+      <a href="https://monkeymoney.com.co/comunidad.html">Comunidad</a>
+    </nav>
+    <div class="site-lang" aria-label="Idioma">
+      <button class="lang-active">ES</button><button disabled>EN</button>
+    </div>
+  </div>
+</header>
+<header class="topbar">
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir menú">☰</button>
+  <div class="brand">
+    <img src="assets/logo.png" class="mm-site-logo" alt="Monkey Money">
+    <div><div class="title">Analizador Monkey Money</div><div class="subtitle">Educación financiera para jugar, aprender y decidir mejor</div></div>
+  </div>
+  <div class="slogan">Aprende finanzas jugando, no memorizando <span></span></div>
+  <div class="legend">
+    <div class="legend-card good"><img src="assets/good.png"><div><b>Buena</b><small>Recomendada</small></div></div>
+    <div class="legend-card neutral"><img src="assets/neutral.png"><div><b>Regular</b><small>Analizar más</small></div></div>
+    <div class="legend-card bad"><img src="assets/bad.png"><div><b>Mala</b><small>No recomendable</small></div></div>
+  </div>
+</header>
+<div class="body">
+<aside class="sidebar" id="sidebar">
+  <button class="side-item active" data-page="inicio"><span>⌂</span><b>Inicio</b></button>
+  <button class="side-item selected" data-page="analiza"><span>⌕</span><b>1. Analiza tu inversión</b></button>
+  <button class="side-item indent analysis-type selected" data-page="analiza" data-analysis-type="acciones"><span>↗</span> Acciones</button>
+  <button class="side-item analysis-type" data-page="analiza" data-analysis-type="inmuebles"><span>⌂</span> Inmuebles</button>
+  <button class="side-item analysis-type" data-page="analiza" data-analysis-type="cdt"><span>▥</span> CDT / Renta fija</button>
+  <button class="side-item analysis-type" data-page="analiza" data-analysis-type="etf"><span>▤</span> ETF / Fondos</button>
+  <button class="side-item analysis-type" data-page="analiza" data-analysis-type="negocios"><span>♢</span> Negocios / Proyectos</button>
+  <button class="side-item analysis-type" data-page="analiza" data-analysis-type="otra"><span>⚙</span> Otra inversión</button>
+  <div class="separator"></div>
+  <button class="side-item" data-page="comparar"><span>⚖</span><b>2. Compara inversiones</b></button>
+  <div class="separator"></div>
+  <button class="side-item" data-page="whatif"><span>↗</span><b>3. ¿Qué pasaría si...?</b></button>
+  <div class="separator"></div>
+  <button class="side-item" data-page="aprende"><span>▣</span><b>4. Aprende</b></button>
+  <div class="separator"></div>
+  <button class="side-item" data-page="glosario"><span>▧</span><b>5. Glosario</b></button>
+  <div class="separator"></div>
+  <button class="side-item" data-page="config"><span>⚙</span><b>6. Configuración</b></button>
+  <div class="education"><div class="mini-logo">🐵</div><p>El dinero se entiende mejor cuando se practica.</p><div class="green-line"></div></div>
+</aside>
+<main class="main">
+  <section id="page-analiza" class="page active-page">
+    <div class="section-header">
+      <div class="section-title"><span id="analysisIcon">📈</span><div><b id="analysisTitle">Acciones</b><small id="analysisSubtitle">Analiza una empresa y sus indicadores de valoración, rentabilidad y crecimiento.</small></div></div>
+      <div class="tip"><img src="assets/bulb.png"><span>Llena solo los datos que conozcas. Monkey Money combina rentabilidad, crecimiento, valoración y margen de seguridad para darte una señal educativa.</span></div>
+    </div>
+    <div class="columns">
+      <section class="leftcol">
+        <div class="card input-card">
+          <div class="card-title">1. Datos de la inversión <span>(llena solo lo que conozcas)</span></div>
+          <div class="form-grid" id="analysisFormGrid">
+            <label>Nombre de la inversión</label><input id="name" value="Ecopetrol (ECOPETROL)">
+            <label>Precio actual por acción</label><div class="money"><span>$</span><input id="price" type="number" value="1950"></div>
+            <label>Número de acciones que comprarás</label><input id="shares" type="number" value="1000">
+            <label>Dividendos anuales por acción</label><div class="money"><span>$</span><input id="dividend" type="number" value="120"></div>
+            <label>Crecimiento esperado del dividendo</label><div class="suffix"><input id="divGrowth" type="number" step="0.1" value="5"><span>% anual</span></div>
+            <label>Crecimiento esperado de la empresa</label><div class="suffix"><input id="growth" type="number" step="0.1" value="8"><span>% anual</span></div>
+            <label>Utilidad por acción (EPS)</label><div class="money"><span>$</span><input id="eps" type="number" value="240"></div>
+            <label>Valor en libros por acción</label><div class="money"><span>$</span><input id="book" type="number" value="1000"></div>
+            <label>Tasa de descuento <small>(costo de oportunidad)</small></label><div class="suffix"><input id="discount" type="number" step="0.1" value="10"><span>% anual</span></div>
+            <label>Horizonte de inversión</label><div class="suffix"><input id="horizon" type="number" value="5"><span>años</span></div>
+          </div>
+        </div>
+        <div class="card loan-card">
+          <div class="card-title">2. ¿Vas a pedir un préstamo?</div>
+          <div class="toggle"><button id="loanNo" class="toggle-btn active">No</button><button id="loanYes" class="toggle-btn">Sí</button></div>
+          <div class="help">Si seleccionas “Sí”, completa estos datos:</div>
+          <div class="loan-grid"><label>Monto del préstamo</label><input id="loanAmount" type="number" value="0"><label>Tasa de interés</label><div class="suffix"><input id="loanRate" type="number" value="0"><span>% anual</span></div><label>Plazo del préstamo</label><div class="suffix"><input id="loanYears" type="number" value="0"><span>años</span></div></div>
+        </div>
+        <div class="card meaning-card"><div class="meaning-title">ⓘ ¿Qué significa cada dato?</div><ul id="meaningList"></ul></div>
+      </section>
+      <section class="centercol">
+        <div class="results-title" id="resultsTitleText">Resultados de la inversión</div>
+        <div class="verdict-card" id="verdictCard">
+          <div class="verdict"><img id="verdictImg" src="assets/central_good.png"><div><div class="small-title">Veredicto general</div><div id="verdict" class="verdict-pill">BUENA</div><p id="verdictText">La inversión se ve atractiva según tus parámetros.</p><div class="score-line">Puntuación: <b id="scoreValue">0,0 / 6</b></div></div></div>
+          <div class="return"><div class="small-title">Rentabilidad esperada ⓘ</div><div id="returnPct" class="big">13,8%</div><small>anual</small></div>
+        </div>
+        <div class="kpi-row"><div class="kpi-card"><div class="small-title">Ganancia estimada en <span id="horizonLabel">5</span> años</div><div id="gain" class="kpi-value">$ 1.009.000</div><small>(sin contar dividendos)</small></div><div class="kpi-card highlight"><div class="small-title">Rentabilidad total estimada</div><div id="totalReturn" class="kpi-value">73,3%</div><small>en <span id="totalYears">5</span> años</small></div></div>
+        <div class="card indicators"><div class="card-title green">Indicadores importantes</div><div class="indicator-head"><span>Indicador</span><span>Resultado</span><span>¿Qué significa?</span><span>Evaluación</span></div>
+          <div class="indicator-row"><b id="metricName0">PER <small>(Price to Earnings)</small></b><span id="per">8,1</span><span>Cuántas veces pagas las ganancias.</span><span id="perEval"></span></div>
+          <div class="indicator-row"><b id="metricName1">ROE <small>(Return on Equity)</small></b><span id="roe">24%</span><span>Qué tan bien usa el capital.</span><span id="roeEval"></span></div>
+          <div class="indicator-row"><b id="metricName2">P/B <small>(Price to Book)</small></b><span id="pb">1,0</span><span>Cuánto pagas por $1 de patrimonio.</span><span id="pbEval"></span></div>
+          <div class="indicator-row"><b id="metricName3">Dividend Yield</b><span id="dy">6,2%</span><span>Rendimiento por dividendos.</span><span id="dyEval"></span></div>
+          <div class="indicator-row"><b id="metricName4">CAGR <small>(Crecimiento anual)</small></b><span id="cagr">8%</span><span>Crecimiento anual compuesto.</span><span id="cagrEval"></span></div>
+          <div class="indicator-row"><b id="metricName5">Margen de seguridad</b><span id="mos">22,6%</span><span>Diferencia entre precio y valor estimado.</span><span id="mosEval"></span></div>
+        </div>
+        <div class="card projection"><div class="card-title green">📈 Proyección de valor de tu inversión</div><div class="chart-wrap"><canvas id="chart"></canvas></div><div class="projection-note">Con una rentabilidad del <b id="projRate">13,8%</b> anual, tu inversión de <b id="initialText">$1.950.000</b> podría crecer hasta <b id="finalText">$3.730.000</b> en <span id="yearsText">5</span> años (sin contar dividendos).</div></div>
+      </section>
+      <aside class="rightcol">
+        <div class="card summary"><div class="card-title">Resumen de la inversión</div><div class="sumrow"><span>Inversión inicial</span><b id="sInitial">$ 1.950.000</b></div><div class="sumrow"><span>Ganancia estimada</span><b id="sGain">$ 1.009.000</b></div><div class="sumrow"><span>Dividendos estimados</span><b id="sDiv">$ 420.000</b></div><div class="sumrow"><span>Valor final aproximado</span><b id="sFinal">$ 3.379.000</b></div><div class="sum-total"><span>Rentabilidad total estimada</span><b id="sTotal">73,3%</b><small>en <span id="sYears">5</span> años</small></div></div>
+        <div class="card why" id="whyCard"><div class="why-head"><img src="assets/why_good.png"><b>¿Por qué esta calificación?</b></div><div class="why-status"><img id="whyImg" src="assets/good.png"><b id="whyLabel">BUENA</b></div><ul id="whyList"></ul></div>
+        <div class="card warning"><div class="warning-title">💡 Ten en cuenta</div><p>Una señal favorable no elimina el riesgo. Compara alternativas, revisa las fuentes y no concentres todo tu dinero en una sola inversión.</p></div>
+        <div class="card learn"><div class="learn-title">▱ Aprende con Monkey Money</div><b>¿Qué es el PER?</b><strong>Una señal de valoración</strong><p>Sirve para relacionar el precio de una acción con sus ganancias por acción.</p><button class="link-btn" data-page="glosario">Ver glosario →</button></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="page-inicio" class="page">
+    <div class="hero-card"><div><span class="eyebrow">MONKEY MONEY</span><h1>El dinero se entiende mejor cuando se practica.</h1><p>Analiza inversiones, compara escenarios y aprende los conceptos detrás de cada decisión.</p><button class="primary-btn" data-page="analiza">Comenzar análisis</button></div><div class="hero-monkey">🐵<span>💹</span></div></div>
+    <div class="feature-grid"><div class="feature-card"><div class="feature-icon">📊</div><h3>Analiza</h3><p>Usa indicadores sencillos para entender una inversión.</p></div><div class="feature-card"><div class="feature-icon">⚖️</div><h3>Compara</h3><p>Contrasta hasta tres alternativas con una tabla clara.</p></div><div class="feature-card"><div class="feature-icon">🧪</div><h3>Experimenta</h3><p>Descubre qué pasa cuando cambias crecimiento, precio o plazo.</p></div><div class="feature-card"><div class="feature-icon">📚</div><h3>Aprende</h3><p>Convierte cada análisis en una pequeña lección.</p></div></div>
+    <div class="download-card card"><div><span class="eyebrow">APLICACIÓN DE ESCRITORIO</span><h3>Analizador Monkey Money también en tu computador</h3><p>Usa el analizador desde Windows o Mac, con la misma experiencia de Monkey Money.</p></div><div class="download-actions"><a class="download-btn" href="downloads/Analizador-Monkey-Money-Windows.exe" download>🪟 Descargar para Windows</a><a class="download-btn secondary" href="downloads/Analizador-Monkey-Money-Mac.dmg" download> Descargar para Mac</a></div></div><div class="disclaimer">Este enfoque permite <strong>aprender los fundamentos financieros, interpretar información económica y tomar decisiones informadas de manera teórica</strong>, asegurando que el conocimiento adquirido sea académico y no una instrucción para invertir personalmente.</div>
+  </section>
+
+  <section id="page-comparar" class="page"><div class="page-head"><div><span class="eyebrow">COMPARAR</span><h2>Compara inversiones</h2><p>Introduce datos rápidos de hasta tres alternativas y ordena la decisión por una señal educativa.</p></div></div><div class="compare-grid" id="compareGrid"></div></section>
+
+  <section id="page-whatif" class="page"><div class="page-head"><div><span class="eyebrow">SIMULADOR</span><h2>¿Qué pasaría si...?</h2><p>Juega con los supuestos y observa cómo cambia el resultado.</p></div></div><div class="whatif-grid"><div class="card scenario-card"><div class="card-title">Ajusta el escenario</div><label>Precio actual<input id="wfPrice" type="number" value="1950"></label><label>Crecimiento esperado<input id="wfGrowth" type="number" value="8" step="0.1"></label><label>Tasa de descuento<input id="wfDiscount" type="number" value="10" step="0.1"></label><label>Horizonte (años)<input id="wfYears" type="number" value="5"></label></div><div class="card scenario-result"><div class="scenario-badge" id="wfBadge">BUENA</div><div class="scenario-big" id="wfValue">$ 2.869.000</div><p>Valor aproximado al final del horizonte, con los supuestos seleccionados.</p><div class="mini-metrics"><div><span>Rentabilidad anual</span><b id="wfReturn">8%</b></div><div><span>Precio vs. valor</span><b id="wfMargin">—</b></div></div></div></div></section>
+
+  <section id="page-aprende" class="page"><div class="page-head"><div><span class="eyebrow">APRENDER</span><h2>Aprende mientras analizas</h2><p>Explicaciones cortas, pensadas para tomar decisiones con más contexto.</p></div></div><div class="lesson-grid" id="lessonGrid">
+<article><span>01</span><h3>PER</h3><p>Compara el precio con las ganancias por acción. Un PER alto puede exigir mucho crecimiento para justificarse.</p></article>
+<article><span>02</span><h3>ROE</h3><p>Mide la rentabilidad generada sobre el patrimonio y ayuda a observar eficiencia del capital.</p></article>
+<article><span>03</span><h3>Margen de seguridad</h3><p>Es la distancia entre precio y valor estimado. Un margen mayor puede dar más espacio frente a errores.</p></article>
+<article><span>04</span><h3>Dividend Yield</h3><p>Relaciona el dividendo anual con el precio actual.</p></article>
+<article><span>05</span><h3>EPS</h3><p>Ganancia por acción. Es una pieza básica para calcular el PER y evaluar crecimiento de utilidades.</p></article>
+<article><span>06</span><h3>P/B</h3><p>Compara el precio de mercado con el valor contable o patrimonio por acción.</p></article>
+<article><span>07</span><h3>CAGR</h3><p>Resume el crecimiento anual compuesto de una variable durante un período.</p></article>
+<article><span>08</span><h3>Flujo de caja</h3><p>Muestra el dinero que entra y sale. El flujo de caja libre ayuda a estudiar la capacidad de generar efectivo.</p></article>
+<article><span>09</span><h3>Volatilidad</h3><p>Describe cuánto fluctúa un precio. Mayor volatilidad suele implicar mayor incertidumbre.</p></article>
+<article><span>10</span><h3>Beta</h3><p>Mide la sensibilidad de un activo frente a los movimientos del mercado de referencia.</p></article>
+<article><span>11</span><h3>ROIC</h3><p>Observa el retorno generado sobre el capital invertido y ayuda a estudiar la calidad del negocio.</p></article>
+<article><span>12</span><h3>Deuda / EBITDA</h3><p>Ayuda a evaluar el peso de la deuda frente a la generación operativa de la empresa.</p></article>
+</div></section>
+
+  <section id="page-glosario" class="page"><div class="page-head"><div><span class="eyebrow">GLOSARIO</span><h2>Glosario financiero</h2><p>Conceptos esenciales en lenguaje sencillo.</p></div><input id="glossarySearch" class="search" placeholder="Buscar término..."></div><div class="glossary-grid" id="glossaryGrid"></div></section>
+
+  <section id="page-config" class="page"><div class="page-head"><div><span class="eyebrow">CONFIGURACIÓN</span><h2>Configuración</h2><p>Personaliza la experiencia de Analizador Monkey Money.</p></div></div><div class="settings-card card"><div class="setting-row"><div><b>Nombre de la aplicación</b><small>Se muestra en la ventana y el encabezado.</small></div><input id="appName" value="Analizador Monkey Money"></div><div class="setting-row"><div><b>Moneda</b><small>Formato de presentación de valores.</small></div><select id="currency"><option value="COP">COP · Peso colombiano</option><option value="USD">USD · Dólar</option><option value="EUR">EUR · Euro</option></select></div><div class="setting-row"><div><b>Modo oscuro</b><small>Cambia la apariencia de la aplicación.</small></div><label class="switch"><input id="darkMode" type="checkbox"><span></span></label></div><div class="setting-row"><div><b>MonkeyMoney.com.co</b><small>Visita nuestra página oficial.</small></div><a class="website-btn" href="https://monkeymoney.com.co/" target="_blank" rel="noreferrer">Abrir MonkeyMoney.com.co ↗</a></div><div class="setting-row"><div><b>Mostrar advertencias educativas</b><small>Consejos y recordatorios de riesgo.</small></div><label class="switch"><input id="showWarnings" type="checkbox" checked><span></span></label></div><div class="about"><div class="about-brand"><b>Monkey Money</b></div><p>Una aplicación de MonkeyMoney.</p><p>© 2026 Beken Bauher Marín - Todos los derechos reservados.</p><p class="tiny">Educación financiera para jugar, leer y conversar.</p></div></div></section>
+</main></div>
+<footer><span>━</span><span>No se trata de hacerte rico rápido, sino de tomar mejores decisiones hoy para tener más libertad mañana.</span><span>━</span></footer>
+</div>
+<script src="app.js"></script>
+</body></html>
