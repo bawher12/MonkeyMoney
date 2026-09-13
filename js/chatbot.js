@@ -4,7 +4,7 @@
 
 (function () {
   var WORKER_URL = 'https://monkeymoney.1144034881.workers.dev';
-  var BOT_IMG = 'assets/Botmo.png'; // <-- sube Botmo.png a esta ruta en tu repo
+   var BOT_IMG = '/assets/Botmo.png'; // ruta absoluta: funciona igual en la raíz y en subcarpetas como /Analizador/// <-- sube Botmo.png a esta ruta en tu repo
 
   var history = [];
   var isOpen = false;
