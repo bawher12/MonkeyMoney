@@ -565,5 +565,9 @@
   "analyzer.loan.yes": "Yes",
   "analyzer.pill.loan.none": "No leverage",
   "analyzer.reason.loan.positive": "The expected return ({v}) beats the loan's rate, so the debt is working in your favor.",
-  "analyzer.reason.loan.negative": "You're paying more interest than the investment would earn ({v} expected vs. {r} on the loan); reconsider the loan before continuing."
+  "analyzer.reason.loan.negative": "You're paying more interest than the investment would earn ({v} expected vs. {r} on the loan); reconsider the loan before continuing.",
+  "pillars.analyzer.tag": "ANALYZE",
+  "pillars.analyzer.title": "Analizador Monkey Money",
+  "pillars.analyzer.desc": "Evaluate stocks, real estate, CDs, ETFs and businesses with educational indicators.",
+  "pillars.analyzer.go": "Open analyzer →"
 }
