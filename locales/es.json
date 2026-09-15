@@ -566,8 +566,6 @@
   "analyzer.pill.loan.none": "Sin apalancamiento",
   "analyzer.reason.loan.positive": "La rentabilidad esperada ({v}) supera la tasa del préstamo, así que la deuda juega a tu favor.",
   "analyzer.reason.loan.negative": "Estás pagando más interés del que la inversión rendiría ({v} esperado vs. {r} del préstamo); revisa el préstamo antes de continuar.",
-  "pillars.analyzer.tag": "ANALIZAR",
-  "pillars.analyzer.title": "Analizador Monkey Money",
-  "pillars.analyzer.desc": "Evalúa acciones, inmuebles, CDT, ETF y negocios con indicadores educativos.",
-  "pillars.analyzer.go": "Abrir analizador →"
+  "analyzer.summary.ownReturn": "Rentabilidad sobre tu capital",
+  "analyzer.summary.ownReturnNote": "tu dinero propio, descontando el préstamo"
 }
