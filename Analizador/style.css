@@ -89,3 +89,10 @@ body.dark .mode-switch{background:#0e1d27}
 body.dark .mode-btn{color:#93aca3}
 .toggle-details-btn{display:block;margin:6px auto 10px;background:none;border:1px dashed #9fb8ac;color:#356a2f;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer}
 body.dark .toggle-details-btn{color:#c6e3af;border-color:#3b6545}
+.learn-attribution{font-size:9px;font-style:italic;color:#5e716c;margin:6px 0}
+body.dark .learn-attribution{color:#93aca3}
+.learn .link-btn{display:block;margin-top:4px;text-decoration:none}
+.lesson-quote{margin:8px 0 0;padding:8px 10px;border-left:3px solid #8bc53f;background:rgba(139,197,63,.08);border-radius:0 6px 6px 0}
+.lesson-quote p{font-size:11px;font-style:italic;margin:0;color:inherit}
+.lesson-quote cite{display:block;font-size:9px;font-style:normal;font-weight:700;margin-top:4px;color:#5e716c}
+body.dark .lesson-quote cite{color:#93aca3}
