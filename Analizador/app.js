@@ -149,7 +149,7 @@ function calc(){
   if(activeType==='negocios') return calcNegocio();
   return calcOtra();
 }
-function updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reasons,chartGrowth,type,loan,loanCountedInScore}={}){
+function updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reasons,chartGrowth,type,loan,loanCountedInScore,raw}={}){
   loan = loan || {active:false,amount:0,rate:0,interest:0};
   if(loan.active){
     gain = gain - loan.interest;
@@ -188,6 +188,7 @@ function updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reas
   };
   $('resultsTitleText').textContent=resultTitles[type]||resultTitles.otra;
   drawChart(initial,chartGrowth,horizon);
+  checkChallenges(type,raw,expected,loan);
 }
 function calcAcciones(){
   const price=n('price'), shares=Math.max(1,n('shares')), div=n('dividend'), dg=n('divGrowth')/100, growth=n('growth')/100, eps=n('eps'), book=n('book'), disc=n('discount')/100, horizon=Math.max(1,n('horizon'));
@@ -197,7 +198,7 @@ function calcAcciones(){
   const evalLabel=k=>k==='good'?EVAL_FAV():k==='neutral'?EVAL_NEU():EVAL_UNFAV();
   const points=arr.map(k=>k==='good'?1:k==='neutral'?.5:0); const metrics=[{value:per.toFixed(1).replace('.',','),kind:arr[0],label:evalLabel(arr[0])},{value:pct(roe,0),kind:arr[1],label:evalLabel(arr[1])},{value:pb.toFixed(1).replace('.',','),kind:arr[2],label:evalLabel(arr[2])},{value:pct(dy),kind:arr[3],label:evalLabel(arr[3])},{value:pct(growth),kind:arr[4],label:evalLabel(arr[4])},{value:pct(mos),kind:arr[5],label:evalLabel(arr[5])}];
   const reasons=[]; if(arr[0]==='good')reasons.push(T('analyzer.reason.acciones.perLow','El PER es bajo frente a tu tasa de descuento.')); else if(arr[0]==='bad')reasons.push(T('analyzer.reason.acciones.perHigh','El PER es elevado frente a tu tasa de descuento.')); if(arr[1]==='good')reasons.push(T('analyzer.reason.acciones.roeGood','El ROE supera cómodamente tu tasa de descuento.')); else if(arr[1]==='bad')reasons.push(T('analyzer.reason.acciones.roeLow','El ROE es bajo frente a tu tasa de descuento y merece revisión.')); if(arr[3]==='good')reasons.push(T('analyzer.reason.acciones.dyGood','El dividendo representa un rendimiento atractivo frente a tu tasa de descuento.')); if(mos>.10)reasons.push(T('analyzer.reason.acciones.mosGood','El margen de seguridad estimado es {pct}%.').replace('{pct}',Math.round(mos*100))); else reasons.push(T('analyzer.reason.acciones.mosLow','El margen de seguridad es reducido en este escenario.'));
-  updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reasons,chartGrowth:growth,type:'acciones',loan});
+  updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reasons,chartGrowth:growth,type:'acciones',loan,raw:{mos}});
 }
 function calcInmuebles(){
   const price=n('price'), units=Math.max(1,n('shares')), rent=n('dividend'), dg=n('divGrowth')/100, app=n('growth')/100, expenses=n('expenses'), occ=clamp(n('occupancy')/100,0,1), disc=n('discount')/100, horizon=Math.max(1,n('horizon')); const initial=price*units; const netAnnual=Math.max(0,(rent*12*occ-expenses*12))*units; const gross=price?rent*12*occ/price:0; const net=price?netAnnual/initial:0; const gain=initial*((1+app)**horizon-1); const divs=netAnnual*((1+dg)**horizon-1)/(dg||1)*1; const expected=net+app; const payback=netAnnual?initial/netAnnual:Infinity;
@@ -207,7 +208,7 @@ function calcInmuebles(){
   const m=[{value:pct(gross),kind:relDisc(gross,disc,1.1,.8),label:lab(relDisc(gross,disc,1.1,.8)==='good',relDisc(gross,disc,1.1,.8)==='neutral')},{value:pct(net),kind:relDisc(net,disc,1,.7),label:lab(relDisc(net,disc,1,.7)==='good',relDisc(net,disc,1,.7)==='neutral')},{value:pct(app),kind:relDisc(app,disc,.9,.5),label:lab(relDisc(app,disc,.9,.5)==='good',relDisc(app,disc,.9,.5)==='neutral')},{value:pct(occ),kind:occ>.95?'good':occ>.85?'neutral':'bad',label:lab(occ>.95,occ>.85)},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:isFinite(payback)?payback.toFixed(1).replace('.',',')+' '+T('analyzer.unit.years','años'):'—',kind:payback<12?'good':payback<20?'neutral':'bad',label:payback<12?EVAL_FAV():payback<20?EVAL_NEU():EVAL_LONG()}];
   const points=m.map(x=>x.kind==='good'?1:x.kind==='neutral'?.5:0);
   const reasons=[T('analyzer.reason.inmuebles.net','Rendimiento neto estimado: {v} al año.').replace('{v}',pct(net)),T('analyzer.reason.inmuebles.occ','Ocupación asumida: {v}.').replace('{v}',pct(occ)),T('analyzer.reason.inmuebles.payback','Recuperación simple aproximada: {v} años.').replace('{v}',isFinite(payback)?payback.toFixed(1):'—')];
-  updateDashboard({initial,gain,divs,expected,horizon,points,metrics:m,reasons,chartGrowth:app,type:'inmuebles',loan,loanCountedInScore:true});
+  updateDashboard({initial,gain,divs,expected,horizon,points,metrics:m,reasons,chartGrowth:app,type:'inmuebles',loan,loanCountedInScore:true,raw:{net}});
 }
 function calcCDT(){
   const principal=n('price'), rate=n('growth')/100, years=Math.max(.1,n('horizon')), inf=n('inflation')/100, tax=n('tax')/100, disc=n('discount')/100; const initial=principal, gross=principal*((1+rate)**years-1), afterTax=gross*(1-tax), gain=afterTax, divs=0, expected=years>0?((1+afterTax/principal)**(1/years)-1):0; const real=(1+expected)/(1+inf)-1; const requiredReal=disc-inf;
@@ -216,7 +217,7 @@ function calcCDT(){
   const points=[relDisc(rate,disc,1,.7),relDisc(expected,disc,1,.7),real>requiredReal?'good':real>0?'neutral':'bad',years<=2?'good':years<=4?'neutral':'bad',tax<.1?'good':tax<.15?'neutral':'bad',leverage.kind];
   const P=['analyzer.pill.cdt.0','Tasa'],P1=['analyzer.pill.cdt.1','Rendimiento neto'],P2=['analyzer.pill.cdt.2','Real'],P3=['analyzer.pill.cdt.3','Plazo'],P4=['analyzer.pill.cdt.4','Impuestos'];
   const metrics=[{value:pct(rate),kind:points[0],label:T(...P)},{value:pct(expected),kind:points[1],label:T(...P1)},{value:pct(real),kind:points[2],label:T(...P2)},{value:years.toFixed(1)+' '+T('analyzer.unit.years','años'),kind:points[3],label:T(...P3)},{value:pct(tax),kind:points[4],label:T(...P4)},{value:leverage.value,kind:leverage.kind,label:leverage.label}];
-  updateDashboard({initial,gain,divs,expected,horizon:years,points:points.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.cdt.gain','Ganancia estimada después de retención: {v}.').replace('{v}',money(gain)),T('analyzer.reason.cdt.real','Rendimiento real frente a inflación: {v}.').replace('{v}',pct(real)),T('analyzer.reason.cdt.term','El plazo es de {v} años.').replace('{v}',years)],chartGrowth:expected,type:'cdt',loan,loanCountedInScore:true});
+  updateDashboard({initial,gain,divs,expected,horizon:years,points:points.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.cdt.gain','Ganancia estimada después de retención: {v}.').replace('{v}',money(gain)),T('analyzer.reason.cdt.real','Rendimiento real frente a inflación: {v}.').replace('{v}',pct(real)),T('analyzer.reason.cdt.term','El plazo es de {v} años.').replace('{v}',years)],chartGrowth:expected,type:'cdt',loan,loanCountedInScore:true,raw:{real}});
 }
 function calcETF(){
   const price=n('price'), shares=Math.max(1,n('shares')), div=n('dividend'), growth=n('growth')/100, dg=n('divGrowth')/100, ter=n('expensesRate')/100, disc=n('discount')/100, horizon=Math.max(1,n('horizon')); const initial=price*shares; const netGrowth=growth-ter; const gain=initial*((1+Math.max(-.99,netGrowth))**horizon-1); const dy=price?div/price:0; const divs=dg?div*shares*(((1+dg)**horizon-1)/dg):div*shares*horizon; const expected=dy+netGrowth; const costEfficiency=growth?netGrowth/growth:1;
@@ -224,7 +225,7 @@ function calcETF(){
   const leverage=loanSpreadMetric(expected,loan);
   const pts=[relDisc(netGrowth,disc,.9,.5),relDisc(dy,disc,.4,.2),ter<.003?'good':ter<.008?'neutral':'bad',costEfficiency>.9?'good':costEfficiency>.7?'neutral':'bad',leverage.kind,shares>0?'good':'bad'];
   const metrics=[{value:pct(netGrowth),kind:pts[0],label:T('analyzer.pill.etf.0','Neto')},{value:pct(dy),kind:pts[1],label:T('analyzer.pill.etf.1','Favorable')},{value:pct(ter),kind:pts[2],label:T('analyzer.pill.etf.2','Bajo costo')},{value:pct(costEfficiency),kind:pts[3],label:T('analyzer.pill.etf.3','Eficiencia')},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:shares.toString(),kind:pts[5],label:T('analyzer.pill.etf.5','Participaciones')}];
-  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.etf.growth','Crecimiento neto estimado después de TER: {v}.').replace('{v}',pct(netGrowth)),T('analyzer.reason.etf.dy','Dividend Yield estimado: {v}.').replace('{v}',pct(dy)),T('analyzer.reason.etf.cost','Costo anual del fondo: {v}.').replace('{v}',pct(ter))],chartGrowth:netGrowth,type:'etf',loan,loanCountedInScore:true});
+  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.etf.growth','Crecimiento neto estimado después de TER: {v}.').replace('{v}',pct(netGrowth)),T('analyzer.reason.etf.dy','Dividend Yield estimado: {v}.').replace('{v}',pct(dy)),T('analyzer.reason.etf.cost','Costo anual del fondo: {v}.').replace('{v}',pct(ter))],chartGrowth:netGrowth,type:'etf',loan,loanCountedInScore:true,raw:{costEfficiency}});
 }
 function calcNegocio(){
   const inv=n('price'), units=Math.max(1,n('shares')), revenue=n('revenue'), margin=n('margin')/100, growth=n('growth')/100, expenses=n('expenses'), disc=n('discount')/100, horizon=Math.max(1,n('horizon')); const initial=inv*units, profit=Math.max(0,revenue*margin-expenses)*units, gain=profit*((1+growth)**horizon-1), divs=profit*0.6*((1+growth)**horizon-1)/(growth||1), expected=initial?profit/initial+growth:0, roi=initial?profit/initial:0, payback=profit?initial/profit:Infinity;
@@ -232,7 +233,7 @@ function calcNegocio(){
   const leverage=loanSpreadMetric(expected,loan);
   const pts=[relDisc(roi,disc,1.5,1),margin>.25?'good':margin>.12?'neutral':'bad',relDisc(growth,disc,1,.6),leverage.kind,payback<5?'good':payback<8?'neutral':'bad',profit>0?'good':'bad'];
   const metrics=[{value:pct(roi),kind:pts[0],label:T('analyzer.pill.negocios.0','ROI')},{value:pct(margin),kind:pts[1],label:T('analyzer.pill.negocios.1','Margen')},{value:pct(growth),kind:pts[2],label:T('analyzer.pill.negocios.2','Crecimiento')},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:isFinite(payback)?payback.toFixed(1).replace('.',',')+' '+T('analyzer.unit.years','años'):'—',kind:pts[4],label:T('analyzer.pill.negocios.4','Recuperación')},{value:pct(profit?profit/revenue:0),kind:pts[5],label:T('analyzer.pill.negocios.5','Margen real')}];
-  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.negocios.profit','Utilidad anual estimada: {v}.').replace('{v}',money(profit)),T('analyzer.reason.negocios.roi','ROI simple estimado: {v}.').replace('{v}',pct(roi)),T('analyzer.reason.negocios.payback','Recuperación aproximada: {v} años.').replace('{v}',isFinite(payback)?payback.toFixed(1):'—')],chartGrowth:growth,type:'negocios',loan,loanCountedInScore:true});
+  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.negocios.profit','Utilidad anual estimada: {v}.').replace('{v}',money(profit)),T('analyzer.reason.negocios.roi','ROI simple estimado: {v}.').replace('{v}',pct(roi)),T('analyzer.reason.negocios.payback','Recuperación aproximada: {v} años.').replace('{v}',isFinite(payback)?payback.toFixed(1):'—')],chartGrowth:growth,type:'negocios',loan,loanCountedInScore:true,raw:{roi}});
 }
 function calcOtra(){
   const initial=n('price')*Math.max(1,n('shares')), income=n('dividend'), costs=n('expenses'), growth=n('growth')/100, disc=n('discount')/100, horizon=Math.max(1,n('horizon')); const net=Math.max(0,income-costs), ret=initial?net/initial:0, gain=initial*((1+growth)**horizon-1), divs=net*horizon, expected=ret+growth; const efficiency=income?net/income:0;
@@ -240,14 +241,49 @@ function calcOtra(){
   const leverage=loanSpreadMetric(expected,loan);
   const pts=[relDisc(ret,disc,1.2,.7),relDisc(growth,disc,1,.6),leverage.kind,net>0?'good':'bad',efficiency>.5?'good':efficiency>.2?'neutral':'bad',initial>0?'good':'bad'];
   const metrics=[{value:pct(ret),kind:pts[0],label:T('analyzer.pill.otra.0','Rendimiento')},{value:pct(growth),kind:pts[1],label:T('analyzer.pill.otra.1','Crecimiento')},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:money(net),kind:pts[3],label:T('analyzer.pill.otra.3','Neto anual')},{value:pct(efficiency),kind:pts[4],label:T('analyzer.pill.otra.4','Eficiencia')},{value:initial>0?'✓':'—',kind:pts[5],label:T('analyzer.pill.otra.5','Datos completos')}];
-  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.otra.income','Ingreso neto anual estimado: {v}.').replace('{v}',money(net)),T('analyzer.reason.otra.ret','Rentabilidad directa estimada: {v}.').replace('{v}',pct(ret)),T('analyzer.reason.otra.growth','Crecimiento supuesto: {v}.').replace('{v}',pct(growth))],chartGrowth:growth,type:'otra',loan,loanCountedInScore:true});
+  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.otra.income','Ingreso neto anual estimado: {v}.').replace('{v}',money(net)),T('analyzer.reason.otra.ret','Rentabilidad directa estimada: {v}.').replace('{v}',pct(ret)),T('analyzer.reason.otra.growth','Crecimiento supuesto: {v}.').replace('{v}',pct(growth))],chartGrowth:growth,type:'otra',loan,loanCountedInScore:true,raw:{ret,net}});
 }
 
 function drawChart(initial,growth,horizon){const c=$('chart'); if(!c)return; const ctx=c.getContext('2d'),w=c.clientWidth||670,h=215,dpr=window.devicePixelRatio||1;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const vals=[];for(let i=0;i<=Math.min(Math.ceil(horizon),8);i++)vals.push(initial*Math.pow(1+growth,i));const max=Math.max(...vals)*1.1,pad={l:52,r:15,t:16,b:32},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;ctx.strokeStyle=document.body.classList.contains('dark')?'#334b4b':'#cdd7d0';ctx.font='10px Segoe UI';ctx.fillStyle=document.body.classList.contains('dark')?'#b9cbc5':'#52645e';ctx.textAlign='right';for(let j=0;j<=4;j++){const y=pad.t+ch*j/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(money((max-(max)*j/4)/1),pad.l-6,y+3)}const bw=cw/vals.length*.55;ctx.textAlign='center';const todayLabel=T('analyzer.chart.today','Hoy'),ySing=T('analyzer.chart.year.singular','año'),yPlur=T('analyzer.chart.year.plural','años');for(let i=0;i<vals.length;i++){const x=pad.l+cw*(i+.5)/vals.length,bh=vals[i]/max*ch,y=pad.t+ch-bh;ctx.fillStyle='#8bc53f';ctx.fillRect(x-bw/2,y,bw,bh);ctx.fillStyle=document.body.classList.contains('dark')?'#d9ecba':'#315a35';ctx.font='bold 10px Segoe UI';ctx.fillText(money(vals[i]),x,y-6);ctx.fillStyle=document.body.classList.contains('dark')?'#b9cbc5':'#52645e';ctx.font='10px Segoe UI';ctx.fillText(i===0?todayLabel:`${i} ${i!==1?yPlur:ySing}`,x,h-8)}}
 
 function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page'));const target=$(`page-${page}`);if(target)target.classList.add('active-page');document.querySelectorAll('.side-item').forEach(b=>b.classList.remove('selected'));document.querySelectorAll(`[data-page="${page}"]`).forEach(b=>b.classList.add('selected'));if(page==='comparar'&&!$('compareGrid').dataset.ready)buildCompare();if(page==='glosario')buildGlossary($('glossarySearch')?.value||'');if(page==='progreso')renderProgress();if(page==='aprende')return;}
 
-// --- Progreso: insignias + historial de práctica (localStorage) -------
+// --- Retos --------------------------------------------------------------
+const CHALLENGES=[
+  {id:'ch_acciones_mos',type:'acciones',icon:'🎯',title:'analyzer.challenge.mos.title',desc:'analyzer.challenge.mos.desc',check:raw=>raw.mos>0.20},
+  {id:'ch_inmuebles_net',type:'inmuebles',icon:'🏠',title:'analyzer.challenge.net.title',desc:'analyzer.challenge.net.desc',check:raw=>raw.net>0.06},
+  {id:'ch_cdt_real',type:'cdt',icon:'🏦',title:'analyzer.challenge.real.title',desc:'analyzer.challenge.real.desc',check:raw=>raw.real>0},
+  {id:'ch_etf_eff',type:'etf',icon:'📊',title:'analyzer.challenge.eff.title',desc:'analyzer.challenge.eff.desc',check:raw=>raw.costEfficiency>0.9},
+  {id:'ch_negocios_roi',type:'negocios',icon:'💼',title:'analyzer.challenge.roi.title',desc:'analyzer.challenge.roi.desc',check:raw=>raw.roi>0.30},
+  {id:'ch_otra_positive',type:'otra',icon:'🧩',title:'analyzer.challenge.otra.title',desc:'analyzer.challenge.otra.desc',check:raw=>raw.ret>0&&raw.net>0},
+  {id:'ch_loan_carry',type:null,icon:'⚖️',title:'analyzer.challenge.loan.title',desc:'analyzer.challenge.loan.desc',check:(raw,expected,loan)=>loan&&loan.active&&(expected-loan.rate)>0.02},
+  {id:'ch_compare',type:'comparar',icon:'⚔️',title:'analyzer.challenge.compare.title',desc:'analyzer.challenge.compare.desc',check:()=>false}
+];
+function getChallenges(){try{return JSON.parse(localStorage.getItem('mm_challenges')||'[]')}catch(e){return[]}}
+function saveChallenges(c){localStorage.setItem('mm_challenges',JSON.stringify(c))}
+function checkChallenges(type,raw,expected,loan){
+  const done=getChallenges();
+  const newlyDone=[];
+  CHALLENGES.forEach(c=>{
+    if(done.includes(c.id))return;
+    if(c.type&&c.type!==type)return;
+    if(c.type===null&&type===undefined)return;
+    try{ if(c.check(raw||{},expected,loan)){done.push(c.id);newlyDone.push(c)} }catch(e){}
+  });
+  if(newlyDone.length){
+    saveChallenges(done);
+    const names=newlyDone.map(c=>T(c.title,'')).join(', ');
+    showSaveToast(T('analyzer.challenge.toast','¡Reto completado! ')+names+' 🏆');
+    if($('page-progreso')?.classList.contains('active-page'))renderProgress();
+  }
+}
+function renderChallenges(){
+  const done=getChallenges();
+  $('challengesGrid').innerHTML=CHALLENGES.map(c=>{
+    const earned=done.includes(c.id);
+    return `<div class="badge-item${earned?' earned':''}"><div class="badge-icon">${c.icon}</div><b>${T(c.title,'')}</b><small>${earned?T('analyzer.progress.earned','¡Desbloqueada!'):T(c.desc,'')}</small></div>`;
+  }).join('');
+}
 function getBadges(){try{return JSON.parse(localStorage.getItem('mm_badges')||'[]')}catch(e){return[]}}
 function saveBadges(b){localStorage.setItem('mm_badges',JSON.stringify(b))}
 function getHistory(){try{return JSON.parse(localStorage.getItem('mm_history')||'[]')}catch(e){return[]}}
@@ -255,6 +291,7 @@ function saveHistory(h){localStorage.setItem('mm_history',JSON.stringify(h))}
 function currentVerdictKind(){const el=$('verdict');if(!el)return'neutral';if(el.classList.contains('verdict-good'))return'good';if(el.classList.contains('verdict-bad'))return'bad';return'neutral'}
 const BADGE_ORDER=['acciones','inmuebles','cdt','etf','negocios','otra'];
 function renderProgress(){
+  renderChallenges();
   const badges=getBadges();
   $('badgesGrid').innerHTML=BADGE_ORDER.map(t=>{
     const earned=badges.includes(t);
@@ -294,7 +331,18 @@ function saveCurrentAnalysis(){
 }
 function selectAnalysisType(type){document.querySelectorAll('.analysis-type').forEach(b=>b.classList.toggle('selected',b.dataset.analysisType===type));nav('analiza');setAnalysisForm(type)}
 function buildCompare(){const g=$('compareGrid');const invLabel=T('analyzer.compare.cardtitle','Inversión');const defNames=[T('analyzer.compare.default.acciones','Ecopetrol'),T('analyzer.compare.default.cdt','CDT'),T('analyzer.compare.default.etf','ETF')];g.innerHTML=['A','B','C'].map((x,i)=>`<div class="compare-card"><h3>${invLabel} ${x}</h3><label>${T('analyzer.compare.name','Nombre')} <input data-cmp="name${i}" value="${defNames[i]||''}"></label><label>${T('analyzer.compare.return','Rentabilidad anual')} <input data-cmp="ret${i}" type="number" value="${i===0?13.8:i===1?9:11}" step="0.1">%</label><label>${T('analyzer.compare.risk','Riesgo (1-10)')} <input data-cmp="risk${i}" type="number" min="1" max="10" value="${i+3}"></label><label>${T('analyzer.compare.liquidity','Liquidez (1-10)')} <input data-cmp="liq${i}" type="number" min="1" max="10" value="${10-i*2}"></label><label>${T('analyzer.compare.horizon','Horizonte (años)')} <input data-cmp="hor${i}" type="number" min="1" value="5"></label><div class="compare-result"><span class="state-chip chip-neutral" data-cmpout="${i}">${T('analyzer.kind.neutral','REGULAR')}</span><b data-cmpscore="${i}">${T('analyzer.compare.score','Puntaje')} 0/100</b></div></div>`).join('');g.dataset.ready='1';g.querySelectorAll('input').forEach(i=>i.addEventListener('input',scoreCompare));scoreCompare()}
-function scoreCompare(){document.querySelectorAll('.compare-card').forEach((c,i)=>{const ret=parseFloat(c.querySelector(`[data-cmp="ret${i}"]`).value)||0,risk=parseFloat(c.querySelector(`[data-cmp="risk${i}"]`).value)||5,liq=parseFloat(c.querySelector(`[data-cmp="liq${i}"]`).value)||5;const s=clamp(ret*4+(10-risk)*4+liq*2,0,100),kind=s>=70?'good':s>=50?'neutral':'bad',d=kindData(kind),chip=c.querySelector(`[data-cmpout="${i}"]`);chip.className=`state-chip chip-${kind}`;chip.textContent=d.label;c.querySelector(`[data-cmpscore="${i}"]`).textContent=`${T('analyzer.compare.score','Puntaje')} ${Math.round(s)}/100`})}
+function scoreCompare(){
+  let bestScore=0;
+  document.querySelectorAll('.compare-card').forEach((c,i)=>{const ret=parseFloat(c.querySelector(`[data-cmp="ret${i}"]`).value)||0,risk=parseFloat(c.querySelector(`[data-cmp="risk${i}"]`).value)||5,liq=parseFloat(c.querySelector(`[data-cmp="liq${i}"]`).value)||5;const s=clamp(ret*4+(10-risk)*4+liq*2,0,100),kind=s>=70?'good':s>=50?'neutral':'bad',d=kindData(kind),chip=c.querySelector(`[data-cmpout="${i}"]`);chip.className=`state-chip chip-${kind}`;chip.textContent=d.label;c.querySelector(`[data-cmpscore="${i}"]`).textContent=`${T('analyzer.compare.score','Puntaje')} ${Math.round(s)}/100`;if(s>bestScore)bestScore=s});
+  if(bestScore>=70){
+    const done=getChallenges();
+    if(!done.includes('ch_compare')){
+      done.push('ch_compare');saveChallenges(done);
+      showSaveToast(T('analyzer.challenge.toast','¡Reto completado! ')+T('analyzer.challenge.compare.title','')+' 🏆');
+      if($('page-progreso')?.classList.contains('active-page'))renderProgress();
+    }
+  }
+}
 function calcWhatIf(){const price=n('wfPrice'),growth=n('wfGrowth')/100,disc=n('wfDiscount')/100,years=Math.max(1,n('wfYears'));const v=price*Math.pow(1+growth,years), margin=disc>0?((v-price)/v):0, ratio=price>0?v/price:0,kind=ratio>1.7&&margin>.1?'good':ratio>1.35?'neutral':'bad';$('wfValue').textContent=money(v);$('wfReturn').textContent=pct(growth);$('wfMargin').textContent=pct(margin);const b=$('wfBadge');b.className='scenario-badge '+kind;b.textContent=kindData(kind).label}
 
 const GLOSSARY_COUNT = 61;
