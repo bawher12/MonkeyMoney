@@ -245,7 +245,53 @@ function calcOtra(){
 
 function drawChart(initial,growth,horizon){const c=$('chart'); if(!c)return; const ctx=c.getContext('2d'),w=c.clientWidth||670,h=215,dpr=window.devicePixelRatio||1;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);const vals=[];for(let i=0;i<=Math.min(Math.ceil(horizon),8);i++)vals.push(initial*Math.pow(1+growth,i));const max=Math.max(...vals)*1.1,pad={l:52,r:15,t:16,b:32},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;ctx.strokeStyle=document.body.classList.contains('dark')?'#334b4b':'#cdd7d0';ctx.font='10px Segoe UI';ctx.fillStyle=document.body.classList.contains('dark')?'#b9cbc5':'#52645e';ctx.textAlign='right';for(let j=0;j<=4;j++){const y=pad.t+ch*j/4;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillText(money((max-(max)*j/4)/1),pad.l-6,y+3)}const bw=cw/vals.length*.55;ctx.textAlign='center';const todayLabel=T('analyzer.chart.today','Hoy'),ySing=T('analyzer.chart.year.singular','año'),yPlur=T('analyzer.chart.year.plural','años');for(let i=0;i<vals.length;i++){const x=pad.l+cw*(i+.5)/vals.length,bh=vals[i]/max*ch,y=pad.t+ch-bh;ctx.fillStyle='#8bc53f';ctx.fillRect(x-bw/2,y,bw,bh);ctx.fillStyle=document.body.classList.contains('dark')?'#d9ecba':'#315a35';ctx.font='bold 10px Segoe UI';ctx.fillText(money(vals[i]),x,y-6);ctx.fillStyle=document.body.classList.contains('dark')?'#b9cbc5':'#52645e';ctx.font='10px Segoe UI';ctx.fillText(i===0?todayLabel:`${i} ${i!==1?yPlur:ySing}`,x,h-8)}}
 
-function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page'));const target=$(`page-${page}`);if(target)target.classList.add('active-page');document.querySelectorAll('.side-item').forEach(b=>b.classList.remove('selected'));document.querySelectorAll(`[data-page="${page}"]`).forEach(b=>b.classList.add('selected'));if(page==='comparar'&&!$('compareGrid').dataset.ready)buildCompare();if(page==='glosario')buildGlossary($('glossarySearch')?.value||'');if(page==='aprende')return;}
+function nav(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page'));const target=$(`page-${page}`);if(target)target.classList.add('active-page');document.querySelectorAll('.side-item').forEach(b=>b.classList.remove('selected'));document.querySelectorAll(`[data-page="${page}"]`).forEach(b=>b.classList.add('selected'));if(page==='comparar'&&!$('compareGrid').dataset.ready)buildCompare();if(page==='glosario')buildGlossary($('glossarySearch')?.value||'');if(page==='progreso')renderProgress();if(page==='aprende')return;}
+
+// --- Progreso: insignias + historial de práctica (localStorage) -------
+function getBadges(){try{return JSON.parse(localStorage.getItem('mm_badges')||'[]')}catch(e){return[]}}
+function saveBadges(b){localStorage.setItem('mm_badges',JSON.stringify(b))}
+function getHistory(){try{return JSON.parse(localStorage.getItem('mm_history')||'[]')}catch(e){return[]}}
+function saveHistory(h){localStorage.setItem('mm_history',JSON.stringify(h))}
+function currentVerdictKind(){const el=$('verdict');if(!el)return'neutral';if(el.classList.contains('verdict-good'))return'good';if(el.classList.contains('verdict-bad'))return'bad';return'neutral'}
+const BADGE_ORDER=['acciones','inmuebles','cdt','etf','negocios','otra'];
+function renderProgress(){
+  const badges=getBadges();
+  $('badgesGrid').innerHTML=BADGE_ORDER.map(t=>{
+    const earned=badges.includes(t);
+    return `<div class="badge-item${earned?' earned':''}"><div class="badge-icon">${TYPE[t].icon}</div><b>${TYPE[t].title}</b><small>${earned?T('analyzer.progress.earned','¡Desbloqueada!'):T('analyzer.progress.locked','Guarda un análisis para desbloquear')}</small></div>`;
+  }).join('');
+  const history=getHistory();
+  if(!history.length){
+    $('historyList').innerHTML=`<div class="history-empty">${T('analyzer.progress.empty','Todavía no has guardado ningún análisis. Ve a "Analiza tu inversión" y presiona "Guardar este análisis".')}</div>`;
+    return;
+  }
+  $('historyList').innerHTML=history.map(h=>{
+    const icon=TYPE[h.type]?TYPE[h.type].icon:'📊';
+    let dateStr=h.date;
+    try{dateStr=new Date(h.date).toLocaleDateString()}catch(e){}
+    return `<div class="history-item"><span class="h-icon">${icon}</span><div class="h-main"><div class="h-name">${h.name}</div><div class="h-date">${dateStr}</div></div><span class="h-verdict ${h.verdictKind}">${h.verdictLabel}</span></div>`;
+  }).join('');
+}
+function showSaveToast(msg){
+  const el=$('saveAnalysisToast');if(!el)return;
+  el.textContent=msg;el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>{el.style.display='none'},4000);
+}
+function saveCurrentAnalysis(){
+  const type=activeType;
+  const name=$('name')?.value||TYPE[type].title;
+  const verdictKind=currentVerdictKind();
+  const verdictLabel=$('verdict')?$('verdict').textContent:'';
+  const entry={type,name,verdictKind,verdictLabel,returnPct:$('returnPct')?$('returnPct').textContent:'',date:new Date().toISOString()};
+  const history=getHistory();
+  history.unshift(entry);
+  if(history.length>20)history.length=20;
+  saveHistory(history);
+  const badges=getBadges();
+  let newBadge=false;
+  if(!badges.includes(type)){badges.push(type);saveBadges(badges);newBadge=true}
+  showSaveToast(newBadge?T('analyzer.progress.toastBadge','¡Guardado! Desbloqueaste una insignia nueva 🏅'):T('analyzer.progress.toastSaved','Análisis guardado ✓'));
+}
 function selectAnalysisType(type){document.querySelectorAll('.analysis-type').forEach(b=>b.classList.toggle('selected',b.dataset.analysisType===type));nav('analiza');setAnalysisForm(type)}
 function buildCompare(){const g=$('compareGrid');const invLabel=T('analyzer.compare.cardtitle','Inversión');const defNames=[T('analyzer.compare.default.acciones','Ecopetrol'),T('analyzer.compare.default.cdt','CDT'),T('analyzer.compare.default.etf','ETF')];g.innerHTML=['A','B','C'].map((x,i)=>`<div class="compare-card"><h3>${invLabel} ${x}</h3><label>${T('analyzer.compare.name','Nombre')} <input data-cmp="name${i}" value="${defNames[i]||''}"></label><label>${T('analyzer.compare.return','Rentabilidad anual')} <input data-cmp="ret${i}" type="number" value="${i===0?13.8:i===1?9:11}" step="0.1">%</label><label>${T('analyzer.compare.risk','Riesgo (1-10)')} <input data-cmp="risk${i}" type="number" min="1" max="10" value="${i+3}"></label><label>${T('analyzer.compare.liquidity','Liquidez (1-10)')} <input data-cmp="liq${i}" type="number" min="1" max="10" value="${10-i*2}"></label><label>${T('analyzer.compare.horizon','Horizonte (años)')} <input data-cmp="hor${i}" type="number" min="1" value="5"></label><div class="compare-result"><span class="state-chip chip-neutral" data-cmpout="${i}">${T('analyzer.kind.neutral','REGULAR')}</span><b data-cmpscore="${i}">${T('analyzer.compare.score','Puntaje')} 0/100</b></div></div>`).join('');g.dataset.ready='1';g.querySelectorAll('input').forEach(i=>i.addEventListener('input',scoreCompare));scoreCompare()}
 function scoreCompare(){document.querySelectorAll('.compare-card').forEach((c,i)=>{const ret=parseFloat(c.querySelector(`[data-cmp="ret${i}"]`).value)||0,risk=parseFloat(c.querySelector(`[data-cmp="risk${i}"]`).value)||5,liq=parseFloat(c.querySelector(`[data-cmp="liq${i}"]`).value)||5;const s=clamp(ret*4+(10-risk)*4+liq*2,0,100),kind=s>=70?'good':s>=50?'neutral':'bad',d=kindData(kind),chip=c.querySelector(`[data-cmpout="${i}"]`);chip.className=`state-chip chip-${kind}`;chip.textContent=d.label;c.querySelector(`[data-cmpscore="${i}"]`).textContent=`${T('analyzer.compare.score','Puntaje')} ${Math.round(s)}/100`})}
@@ -280,6 +326,7 @@ function refreshDynamicContent(){
   if($('compareGrid')?.dataset.ready) buildCompare();
   buildGlossary($('glossarySearch')?.value||'');
   calcWhatIf();
+  if($('page-progreso')?.classList.contains('active-page')) renderProgress();
 }
 document.addEventListener('mm:lang-changed', refreshDynamicContent);
 
@@ -293,6 +340,13 @@ function wire(){
   };
   $('moroLoanTipClose')?.addEventListener('click',()=>{ $('moroLoanTip').style.display='none'; localStorage.setItem('mm_loan_tip_seen','1'); });
   ['loanAmount','loanRate','loanYears'].forEach(id=>$(id)?.addEventListener('input',calc));
+  $('saveAnalysisBtn')?.addEventListener('click',saveCurrentAnalysis);
+  $('clearHistoryBtn')?.addEventListener('click',()=>{
+    if(confirm(T('analyzer.progress.clearConfirm','¿Borrar todo tu historial de práctica? Las insignias ya ganadas no se pierden.'))){
+      saveHistory([]);
+      renderProgress();
+    }
+  });
   $('appName').addEventListener('input',e=>{document.querySelector('.title').textContent=e.target.value;document.title=e.target.value;localStorage.setItem('mm_app_name',e.target.value)});
   const savedName=localStorage.getItem('mm_app_name');if(savedName){$('appName').value=savedName;document.querySelector('.title').textContent=savedName;document.title=savedName}
   $('currency').value=currentCurrency; $('currency').addEventListener('change',e=>{currentCurrency=e.target.value;localStorage.setItem('mm_currency',currentCurrency);calc();calcWhatIf();});
