@@ -48,24 +48,26 @@ function setAnalysisForm(type){
   const c=TYPE[type];
   $('analysisTitle').textContent=c.title; $('analysisIcon').textContent=c.icon; $('analysisSubtitle').textContent=c.subtitle;
   const g=$('analysisFormGrid');
+  const simple=getMode()==='simple';
+  const L=(key,fallback)=>simple?T(key+'.simple',fallback):T(key,fallback);
   const templates={
     acciones:[
-      [T('analyzer.field.acciones.name','Nombre de la acción'),'text','name',T('analyzer.default.acciones.name','Ecopetrol (ECOPETROL)')],[T('analyzer.field.acciones.price','Precio actual por acción'),'number','price','1950'],[T('analyzer.field.acciones.shares','Número de acciones que comprarás'),'number','shares','1000'],[T('analyzer.field.acciones.dividend','Dividendo anual por acción'),'number','dividend','120'],[T('analyzer.field.acciones.divGrowth','Crecimiento esperado del dividendo (%)'),'number','divGrowth','5'],[T('analyzer.field.acciones.growth','Crecimiento esperado de la empresa (%)'),'number','growth','8'],[T('analyzer.field.acciones.eps','Utilidad por acción (EPS)'),'number','eps','240'],[T('analyzer.field.acciones.book','Valor en libros por acción'),'number','book','1000'],[T('analyzer.field.acciones.discount','Tasa de descuento / costo de oportunidad (%)'),'number','discount','10'],[T('analyzer.field.acciones.horizon','Horizonte de inversión (años)'),'number','horizon','5']
+      [L('analyzer.field.acciones.name','¿Qué acción es?'),'text','name',T('analyzer.default.acciones.name','Ecopetrol (ECOPETROL)')],[L('analyzer.field.acciones.price','¿Cuánto cuesta hoy una acción?'),'number','price','1950'],[L('analyzer.field.acciones.shares','¿Cuántas acciones vas a comprar?'),'number','shares','1000'],[L('analyzer.field.acciones.dividend','¿Cuánto te paga al año por cada acción?'),'number','dividend','120'],[L('analyzer.field.acciones.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','5'],[L('analyzer.field.acciones.growth','¿Cuánto crees que va a crecer la empresa al año (%)?'),'number','growth','8'],[L('analyzer.field.acciones.eps','¿Cuánto gana la empresa por cada acción al año?'),'number','eps','240'],[L('analyzer.field.acciones.book','Si la empresa cerrara hoy, ¿cuánto valdría cada acción en papel?'),'number','book','1000'],[L('analyzer.field.acciones.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','10'],[L('analyzer.field.acciones.horizon','¿Por cuántos años piensas quedarte con esta inversión?'),'number','horizon','5']
     ],
     inmuebles:[
-      [T('analyzer.field.inmuebles.name','Nombre del inmueble'),'text','name',T('analyzer.default.inmuebles.name','Apartamento / Local')],[T('analyzer.field.inmuebles.price','Precio de compra'),'number','price','300000000'],[T('analyzer.field.inmuebles.shares','Cantidad de inmuebles'),'number','shares','1'],[T('analyzer.field.inmuebles.dividend','Arriendo mensual esperado'),'number','dividend','1800000'],[T('analyzer.field.inmuebles.divGrowth','Crecimiento anual del arriendo (%)'),'number','divGrowth','4'],[T('analyzer.field.inmuebles.growth','Valorización esperada anual (%)'),'number','growth','6'],[T('analyzer.field.inmuebles.expenses','Gastos mensuales'),'number','expenses','350000'],[T('analyzer.field.inmuebles.occupancy','Ocupación esperada (%)'),'number','occupancy','95'],[T('analyzer.field.inmuebles.discount','Tasa de descuento (%)'),'number','discount','10'],[T('analyzer.field.inmuebles.horizon','Horizonte (años)'),'number','horizon','10']
+      [L('analyzer.field.inmuebles.name','¿Qué inmueble es?'),'text','name',T('analyzer.default.inmuebles.name','Apartamento / Local')],[L('analyzer.field.inmuebles.price','¿Cuánto cuesta comprarlo?'),'number','price','300000000'],[L('analyzer.field.inmuebles.shares','¿Cuántos inmuebles como este vas a comprar?'),'number','shares','1'],[L('analyzer.field.inmuebles.dividend','¿Cuánto arriendo recibirías al mes?'),'number','dividend','1800000'],[L('analyzer.field.inmuebles.divGrowth','¿Ese arriendo sube cada año? ¿Cuánto (%)?'),'number','divGrowth','4'],[L('analyzer.field.inmuebles.growth','¿Cuánto crees que va a subir de valor al año (%)?'),'number','growth','6'],[L('analyzer.field.inmuebles.expenses','¿Cuánto gastas al mes en mantenerlo?'),'number','expenses','350000'],[L('analyzer.field.inmuebles.occupancy','¿Qué tanto del tiempo esperas tenerlo arrendado (%)?'),'number','occupancy','95'],[L('analyzer.field.inmuebles.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','10'],[L('analyzer.field.inmuebles.horizon','¿Por cuántos años piensas quedarte con él?'),'number','horizon','10']
     ],
     cdt:[
-      [T('analyzer.field.cdt.name','Nombre del producto'),'text','name',T('analyzer.default.cdt.name','CDT a 1 año')],[T('analyzer.field.cdt.price','Capital inicial'),'number','price','10000000'],[T('analyzer.field.cdt.shares','Unidades / cuentas'),'number','shares','1'],[T('analyzer.field.cdt.growth','Tasa efectiva anual (%)'),'number','growth','9'],[T('analyzer.field.cdt.horizon','Plazo (años)'),'number','horizon','1'],[T('analyzer.field.cdt.inflation','Inflación esperada (%)'),'number','inflation','5'],[T('analyzer.field.cdt.tax','Retención / impuestos (%)'),'number','tax','4'],[T('analyzer.field.cdt.discount','Tasa mínima exigida (%)'),'number','discount','8']
+      [L('analyzer.field.cdt.name','¿Qué CDT o producto es?'),'text','name',T('analyzer.default.cdt.name','CDT a 1 año')],[L('analyzer.field.cdt.price','¿Cuánto vas a poner inicialmente?'),'number','price','10000000'],[L('analyzer.field.cdt.shares','¿Cuántos CDT o cuentas como este vas a abrir?'),'number','shares','1'],[L('analyzer.field.cdt.growth','¿Qué tasa de interés te ofrecen al año (%)?'),'number','growth','9'],[L('analyzer.field.cdt.horizon','¿A cuántos años es el plazo?'),'number','horizon','1'],[L('analyzer.field.cdt.inflation','¿Cuánto crees que va a subir el costo de vida al año (%)?'),'number','inflation','5'],[L('analyzer.field.cdt.tax','¿Cuánto te descuentan de impuestos sobre lo que ganas (%)?'),'number','tax','4'],[L('analyzer.field.cdt.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','8']
     ],
     etf:[
-      [T('analyzer.field.etf.name','Nombre del ETF / fondo'),'text','name',T('analyzer.default.etf.name','ETF global')],[T('analyzer.field.etf.price','Precio actual por participación'),'number','price','400'],[T('analyzer.field.etf.shares','Participaciones'),'number','shares','25'],[T('analyzer.field.etf.dividend','Dividendos anuales por participación'),'number','dividend','6'],[T('analyzer.field.etf.growth','Crecimiento esperado (%)'),'number','growth','7'],[T('analyzer.field.etf.divGrowth','Crecimiento del dividendo (%)'),'number','divGrowth','4'],[T('analyzer.field.etf.expensesRate','Gastos del fondo / TER (%)'),'number','expensesRate','0.2'],[T('analyzer.field.etf.discount','Tasa de descuento (%)'),'number','discount','9'],[T('analyzer.field.etf.horizon','Horizonte (años)'),'number','horizon','5']
+      [L('analyzer.field.etf.name','¿Qué ETF o fondo es?'),'text','name',T('analyzer.default.etf.name','ETF global')],[L('analyzer.field.etf.price','¿Cuánto cuesta hoy una participación?'),'number','price','400'],[L('analyzer.field.etf.shares','¿Cuántas participaciones vas a comprar?'),'number','shares','25'],[L('analyzer.field.etf.dividend','¿Cuánto te paga al año por cada participación?'),'number','dividend','6'],[L('analyzer.field.etf.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','7'],[L('analyzer.field.etf.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','4'],[L('analyzer.field.etf.expensesRate','¿Cuánto te cobra el fondo al año por administrarlo (%)?'),'number','expensesRate','0.2'],[L('analyzer.field.etf.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','9'],[L('analyzer.field.etf.horizon','¿Por cuántos años piensas quedarte con esto?'),'number','horizon','5']
     ],
     negocios:[
-      [T('analyzer.field.negocios.name','Nombre del proyecto'),'text','name',T('analyzer.default.negocios.name','Negocio / Proyecto')],[T('analyzer.field.negocios.price','Inversión inicial'),'number','price','50000000'],[T('analyzer.field.negocios.shares','Unidades / proyectos'),'number','shares','1'],[T('analyzer.field.negocios.revenue','Ingresos anuales esperados'),'number','revenue','30000000'],[T('analyzer.field.negocios.margin','Margen neto esperado (%)'),'number','margin','20'],[T('analyzer.field.negocios.growth','Crecimiento anual (%)'),'number','growth','8'],[T('analyzer.field.negocios.expenses','Gasto / inversión adicional anual'),'number','expenses','3000000'],[T('analyzer.field.negocios.discount','Tasa de descuento (%)'),'number','discount','12'],[T('analyzer.field.negocios.horizon','Horizonte (años)'),'number','horizon','5']
+      [L('analyzer.field.negocios.name','¿Qué negocio o proyecto es?'),'text','name',T('analyzer.default.negocios.name','Negocio / Proyecto')],[L('analyzer.field.negocios.price','¿Cuánto necesitas invertir para empezar?'),'number','price','50000000'],[L('analyzer.field.negocios.shares','¿Cuántos negocios o proyectos como este vas a hacer?'),'number','shares','1'],[L('analyzer.field.negocios.revenue','¿Cuánto esperas vender al año?'),'number','revenue','30000000'],[L('analyzer.field.negocios.margin','De lo que vendes, ¿qué porcentaje te queda limpio (%)?'),'number','margin','20'],[L('analyzer.field.negocios.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','8'],[L('analyzer.field.negocios.expenses','¿Cuánto gastas al año en mantenerlo?'),'number','expenses','3000000'],[L('analyzer.field.negocios.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','12'],[L('analyzer.field.negocios.horizon','¿En cuántos años esperas ver resultados?'),'number','horizon','5']
     ],
     otra:[
-      [T('analyzer.field.otra.name','Nombre de la inversión'),'text','name',T('analyzer.default.otra.name','Mi inversión')],[T('analyzer.field.otra.price','Capital inicial'),'number','price','10000000'],[T('analyzer.field.otra.shares','Unidades / participaciones'),'number','shares','1'],[T('analyzer.field.otra.dividend','Ingreso o rendimiento anual'),'number','dividend','800000'],[T('analyzer.field.otra.growth','Crecimiento esperado (%)'),'number','growth','7'],[T('analyzer.field.otra.divGrowth','Crecimiento del ingreso (%)'),'number','divGrowth','3'],[T('analyzer.field.otra.expenses','Costos anuales'),'number','expenses','100000'],[T('analyzer.field.otra.discount','Tasa de descuento (%)'),'number','discount','10'],[T('analyzer.field.otra.horizon','Horizonte (años)'),'number','horizon','5']
+      [L('analyzer.field.otra.name','¿Qué inversión es?'),'text','name',T('analyzer.default.otra.name','Mi inversión')],[L('analyzer.field.otra.price','¿Cuánto vas a poner inicialmente?'),'number','price','10000000'],[L('analyzer.field.otra.shares','¿Cuántas unidades vas a comprar?'),'number','shares','1'],[L('analyzer.field.otra.dividend','¿Cuánto te genera al año?'),'number','dividend','800000'],[L('analyzer.field.otra.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','7'],[L('analyzer.field.otra.divGrowth','¿Ese ingreso crece cada año? ¿Cuánto (%)?'),'number','divGrowth','3'],[L('analyzer.field.otra.expenses','¿Cuánto gastas al año en mantenerlo?'),'number','expenses','100000'],[L('analyzer.field.otra.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','10'],[L('analyzer.field.otra.horizon','¿Por cuántos años piensas quedarte con esto?'),'number','horizon','5']
     ]
   };
   const rows=templates[type];
@@ -375,8 +377,27 @@ function refreshDynamicContent(){
   buildGlossary($('glossarySearch')?.value||'');
   calcWhatIf();
   if($('page-progreso')?.classList.contains('active-page')) renderProgress();
+  applyMode();
 }
 document.addEventListener('mm:lang-changed', refreshDynamicContent);
+
+function getMode(){return localStorage.getItem('mm_mode')==='avanzado'?'avanzado':'simple'}
+function setModeLocal(mode){localStorage.setItem('mm_mode',mode)}
+function applyMode(){
+  const mode=getMode();
+  $('modeSimple')?.classList.toggle('active',mode==='simple');
+  $('modeAdvanced')?.classList.toggle('active',mode==='avanzado');
+  const details=$('advancedDetails'),btn=$('toggleDetailsBtn');
+  if(!details||!btn)return;
+  if(mode==='avanzado'){
+    details.style.display='';
+    btn.style.display='none';
+  } else {
+    details.style.display='none';
+    btn.style.display='block';
+    btn.textContent=T('analyzer.simple.showDetails','Ver detalles técnicos ▾');
+  }
+}
 
 function wire(){
   document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.analysisType) selectAnalysisType(b.dataset.analysisType); else nav(b.dataset.page); }));
@@ -401,6 +422,15 @@ function wire(){
   $('darkMode').addEventListener('change',e=>{document.body.classList.toggle('dark',e.target.checked);localStorage.setItem('mm_dark',e.target.checked?'1':'0');calc();});
   $('showWarnings').addEventListener('change',e=>document.querySelector('.warning').style.display=e.target.checked?'block':'none');
   window.addEventListener('resize',calc);
+  $('modeSimple')?.addEventListener('click',()=>{setModeLocal('simple');applyMode();setAnalysisForm(activeType)});
+  $('modeAdvanced')?.addEventListener('click',()=>{setModeLocal('avanzado');applyMode();setAnalysisForm(activeType)});
+  $('toggleDetailsBtn')?.addEventListener('click',()=>{
+    const details=$('advancedDetails');
+    const expanded=details.style.display!=='none';
+    details.style.display=expanded?'none':'';
+    $('toggleDetailsBtn').textContent=expanded?T('analyzer.simple.showDetails','Ver detalles técnicos ▾'):T('analyzer.simple.hideDetails','Ocultar detalles técnicos ▴');
+  });
+  applyMode();
   setupDark(); setupMobileMenu(); selectAnalysisType('acciones'); calcWhatIf(); buildGlossary('');
 }
 wire();

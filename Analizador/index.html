@@ -101,6 +101,10 @@
     <div class="columns">
       <section class="leftcol">
         <div class="card input-card">
+          <div class="mode-switch" id="modeSwitch">
+            <button type="button" id="modeSimple" class="mode-btn" data-i18n="analyzer.mode.simple">Sencillo</button>
+            <button type="button" id="modeAdvanced" class="mode-btn" data-i18n="analyzer.mode.advanced">Avanzado</button>
+          </div>
           <div class="card-title"><span class="i18n-inline" data-i18n="analyzer.datacard.title">1. Datos de la inversión</span> <span data-i18n="analyzer.datacard.hint">(llena solo lo que conozcas)</span></div>
           <div class="form-grid" id="analysisFormGrid">
             <label>Nombre de la inversión</label><input id="name" value="Ecopetrol (ECOPETROL)">
@@ -138,6 +142,8 @@
           <div class="return"><div class="small-title" data-i18n="analyzer.return.title">Rentabilidad esperada ⓘ</div><div id="returnPct" class="big">13,8%</div><small data-i18n="analyzer.return.annual">anual</small></div>
         </div>
         <div class="kpi-row"><div class="kpi-card"><div class="small-title"><span data-i18n="analyzer.kpi.gainTitle1">Ganancia estimada en</span> <span id="horizonLabel">5</span> <span data-i18n="analyzer.unit.years">años</span></div><div id="gain" class="kpi-value">$ 1.009.000</div><small data-i18n="analyzer.kpi.noDiv">(sin contar dividendos)</small></div><div class="kpi-card highlight"><div class="small-title" data-i18n="analyzer.kpi.totalReturnTitle">Rentabilidad total estimada</div><div id="totalReturn" class="kpi-value">73,3%</div><small><span data-i18n="analyzer.kpi.in">en</span> <span id="totalYears">5</span> <span data-i18n="analyzer.unit.years">años</span></small></div></div>
+        <button type="button" class="toggle-details-btn" id="toggleDetailsBtn" style="display:none" data-i18n="analyzer.simple.showDetails">Ver detalles técnicos ▾</button>
+        <div id="advancedDetails">
         <div class="card indicators"><div class="card-title green" data-i18n="analyzer.indicators.title">Indicadores importantes</div><div class="indicator-head"><span data-i18n="analyzer.indicators.col.indicator">Indicador</span><span data-i18n="analyzer.indicators.col.result">Resultado</span><span data-i18n="analyzer.indicators.col.meaning">¿Qué significa?</span><span data-i18n="analyzer.indicators.col.eval">Evaluación</span></div>
           <div class="indicator-row"><b id="metricName0">PER <small>(Price to Earnings)</small></b><span id="per">8,1</span><span data-i18n="analyzer.indicators.desc.per">Cuántas veces pagas las ganancias.</span><span id="perEval"></span></div>
           <div class="indicator-row"><b id="metricName1">ROE <small>(Return on Equity)</small></b><span id="roe">24%</span><span data-i18n="analyzer.indicators.desc.roe">Qué tan bien usa el capital.</span><span id="roeEval"></span></div>
@@ -147,6 +153,7 @@
           <div class="indicator-row"><b id="metricName5">Margen de seguridad</b><span id="mos">22,6%</span><span data-i18n="analyzer.indicators.desc.mos">Diferencia entre precio y valor estimado.</span><span id="mosEval"></span></div>
         </div>
         <div class="card projection"><div class="card-title green" data-i18n="analyzer.projection.title">📈 Proyección de valor de tu inversión</div><div class="chart-wrap"><canvas id="chart"></canvas></div><div class="projection-note"><span data-i18n="analyzer.proj.part1">Con una rentabilidad del</span> <b id="projRate">13,8%</b> <span data-i18n="analyzer.proj.part2">anual, tu inversión de</span> <b id="initialText">$1.950.000</b> <span data-i18n="analyzer.proj.part3">podría crecer hasta</span> <b id="finalText">$3.730.000</b> <span data-i18n="analyzer.proj.part4">en</span> <span id="yearsText">5</span> <span data-i18n="analyzer.proj.part5">años (sin contar dividendos).</span></div></div>
+        </div>
       </section>
       <aside class="rightcol">
         <div class="card summary"><div class="card-title" data-i18n="analyzer.summary.title">Resumen de la inversión</div><div class="sumrow"><span data-i18n="analyzer.summary.initial">Inversión inicial</span><b id="sInitial">$ 1.950.000</b></div><div class="sumrow"><span data-i18n="analyzer.summary.gain">Ganancia estimada</span><b id="sGain">$ 1.009.000</b></div><div class="sumrow"><span data-i18n="analyzer.summary.dividends">Dividendos estimados</span><b id="sDiv">$ 420.000</b></div><div class="sumrow"><span data-i18n="analyzer.summary.final">Valor final aproximado</span><b id="sFinal">$ 3.379.000</b></div><div class="sum-total"><span data-i18n="analyzer.summary.totalReturn">Rentabilidad total estimada</span><b id="sTotal">73,3%</b><small><span class="i18n-inline" data-i18n="analyzer.summary.in">en</span> <span id="sYears">5</span> <span class="i18n-inline" data-i18n="analyzer.unit.years">años</span></small></div><div class="sum-total" id="sOwnReturnRow" style="display:none"><span data-i18n="analyzer.summary.ownReturn">Rentabilidad sobre tu capital</span><b id="sOwnReturn">73,3%</b><small data-i18n="analyzer.summary.ownReturnNote">tu dinero propio, descontando el préstamo</small></div></div>
