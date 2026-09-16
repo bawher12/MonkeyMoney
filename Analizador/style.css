@@ -20,7 +20,9 @@ body.dark .warning{background:#172a2a}.dark .learn{background:#26302a}
 body.dark .sum-total{background:#263d29;border-color:#426342}body.dark .sum-total b{color:#bde68b}
 body.dark .why,.dark .summary{background:#132630}
 body.dark footer{background:#07131d}
-body.dark .side-item{color:#cfe0db}.dark .side-item:hover{background:#17313b}.dark .side-item.selected{background:#234b46;color:#fff}
+body.dark .side-item{color:#cfe0db}
+body.dark .side-item.active{background:#132630}
+body.dark .side-item.indent{background:#16283a}.dark .side-item:hover{background:#17313b}.dark .side-item.selected{background:#234b46;color:#fff}
 body.dark .tip{background:#102e35!important;border-color:#2f5158!important;color:#c8dcd7}
 body.dark .verdict{background:#132a25!important}body.dark .verdict-card.state-neutral .verdict,body.dark .verdict-card.state-neutral .return{background:#302717!important}body.dark .verdict-card.state-bad .verdict,body.dark .verdict-card.state-bad .return{background:#321d20!important}
 @media(max-width:1100px){.mm-site-logo{width:76px;height:76px;object-fit:contain;object-position:center;display:block;flex:0 0 76px}.slogan{display:none}}
@@ -69,6 +71,7 @@ body.dark .badge-item small{color:#93aca3}
 .card-title-row .card-title{min-width:0}
 .card-title-row .card-title{border-bottom:none;padding:10px 0}
 .clear-history-btn{background:none;border:none;color:#a6423a;font-size:10px;font-weight:700;cursor:pointer;padding:6px}
+body.dark .card-title{background:#132630;border-color:#28424d}
 body.dark .card-title-row{background:#132630;border-color:#28424d}
 .history-empty{padding:16px;font-size:11px;color:#68756e}
 .history-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #eef2ee}
