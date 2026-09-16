@@ -567,5 +567,8 @@
   "analyzer.reason.loan.positive": "La rentabilidad esperada ({v}) supera la tasa del préstamo, así que la deuda juega a tu favor.",
   "analyzer.reason.loan.negative": "Estás pagando más interés del que la inversión rendiría ({v} esperado vs. {r} del préstamo); revisa el préstamo antes de continuar.",
   "analyzer.summary.ownReturn": "Rentabilidad sobre tu capital",
-  "analyzer.summary.ownReturnNote": "tu dinero propio, descontando el préstamo"
+  "analyzer.summary.ownReturnNote": "tu dinero propio, descontando el préstamo",
+  "analyzer.field.discountHint": "¿No sabes qué poner? Usa 8-12% como referencia.",
+  "analyzer.loan.moroTip": "Pedir prestado agranda tanto las ganancias como las pérdidas: si la inversión rinde más que el interés del préstamo, ganas más de lo normal; si rinde menos, pierdes más de lo normal. Úsalo con cuidado.",
+  "analyzer.loan.moroTipClose": "Entendido"
 }

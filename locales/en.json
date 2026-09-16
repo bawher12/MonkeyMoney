@@ -567,5 +567,8 @@
   "analyzer.reason.loan.positive": "The expected return ({v}) beats the loan's rate, so the debt is working in your favor.",
   "analyzer.reason.loan.negative": "You're paying more interest than the investment would earn ({v} expected vs. {r} on the loan); reconsider the loan before continuing.",
   "analyzer.summary.ownReturn": "Return on your own capital",
-  "analyzer.summary.ownReturnNote": "your own cash, after accounting for the loan"
+  "analyzer.summary.ownReturnNote": "your own cash, after accounting for the loan",
+  "analyzer.field.discountHint": "Not sure what to put? Use 8-12% as a reference.",
+  "analyzer.loan.moroTip": "Borrowing to invest makes both gains and losses bigger: if the investment earns more than the loan's interest, you gain more than usual; if it earns less, you lose more than usual. Use it carefully.",
+  "analyzer.loan.moroTipClose": "Got it"
 }
