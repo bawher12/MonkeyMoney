@@ -570,5 +570,19 @@
   "analyzer.summary.ownReturnNote": "your own cash, after accounting for the loan",
   "analyzer.field.discountHint": "Not sure what to put? Use 8-12% as a reference.",
   "analyzer.loan.moroTip": "Borrowing to invest makes both gains and losses bigger: if the investment earns more than the loan's interest, you gain more than usual; if it earns less, you lose more than usual. Use it carefully.",
-  "analyzer.loan.moroTipClose": "Got it"
+  "analyzer.loan.moroTipClose": "Got it",
+  "analyzer.side.step7": "7. Your progress",
+  "analyzer.page.progreso.eyebrow": "YOUR PROGRESS",
+  "analyzer.page.progreso.title": "Badges and practice history",
+  "analyzer.page.progreso.desc": "Every analysis you save shows up here — so you can see how your practice has gone over time.",
+  "analyzer.progress.save": "💾 Save this analysis",
+  "analyzer.progress.badgesTitle": "Badges",
+  "analyzer.progress.historyTitle": "Practice history",
+  "analyzer.progress.clear": "Clear history",
+  "analyzer.progress.earned": "Unlocked!",
+  "analyzer.progress.locked": "Save an analysis to unlock",
+  "analyzer.progress.empty": "You haven't saved any analysis yet. Go to \"Analyze your investment\" and press \"Save this analysis\".",
+  "analyzer.progress.toastSaved": "Analysis saved ✓",
+  "analyzer.progress.toastBadge": "Saved! You unlocked a new badge 🏅",
+  "analyzer.progress.clearConfirm": "Clear your whole practice history? Badges you already earned are kept."
 }

@@ -570,5 +570,19 @@
   "analyzer.summary.ownReturnNote": "tu dinero propio, descontando el préstamo",
   "analyzer.field.discountHint": "¿No sabes qué poner? Usa 8-12% como referencia.",
   "analyzer.loan.moroTip": "Pedir prestado agranda tanto las ganancias como las pérdidas: si la inversión rinde más que el interés del préstamo, ganas más de lo normal; si rinde menos, pierdes más de lo normal. Úsalo con cuidado.",
-  "analyzer.loan.moroTipClose": "Entendido"
+  "analyzer.loan.moroTipClose": "Entendido",
+  "analyzer.side.step7": "7. Tu progreso",
+  "analyzer.page.progreso.eyebrow": "TU PROGRESO",
+  "analyzer.page.progreso.title": "Insignias e historial de práctica",
+  "analyzer.page.progreso.desc": "Cada análisis que guardas queda aquí — así ves cómo has ido practicando con el tiempo.",
+  "analyzer.progress.save": "💾 Guardar este análisis",
+  "analyzer.progress.badgesTitle": "Insignias",
+  "analyzer.progress.historyTitle": "Historial de práctica",
+  "analyzer.progress.clear": "Borrar historial",
+  "analyzer.progress.earned": "¡Desbloqueada!",
+  "analyzer.progress.locked": "Guarda un análisis para desbloquear",
+  "analyzer.progress.empty": "Todavía no has guardado ningún análisis. Ve a \"Analiza tu inversión\" y presiona \"Guardar este análisis\".",
+  "analyzer.progress.toastSaved": "Análisis guardado ✓",
+  "analyzer.progress.toastBadge": "¡Guardado! Desbloqueaste una insignia nueva 🏅",
+  "analyzer.progress.clearConfirm": "¿Borrar todo tu historial de práctica? Las insignias ya ganadas no se pierden."
 }
