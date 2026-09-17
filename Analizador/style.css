@@ -101,3 +101,41 @@ body.dark .learn-attribution{color:#93aca3}
 .lesson-quote p{font-size:11px;font-style:italic;margin:0;color:inherit}
 .lesson-quote cite{display:block;font-size:9px;font-style:normal;font-weight:700;margin-top:4px;color:#5e716c}
 body.dark .lesson-quote cite{color:#93aca3}
+.field-with-lookup{display:flex;gap:4px;align-items:center}
+.field-with-lookup input{flex:1;min-width:0}
+.field-lookup-btn{flex-shrink:0;width:32px;height:32px;border-radius:8px;border:1px solid #cddbcf;background:#eef6e0;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.field-lookup-btn:hover{background:#dff0cd}
+.field-lookup-btn.loading{opacity:.6;cursor:wait}
+body.dark .field-lookup-btn{background:#132630;border-color:#28424d}
+body.dark .field-lookup-btn:hover{background:#17313b}
+.lookup-popover{grid-column:1/-1;margin-top:-4px;background:#eef6ef;border:1px solid #cfe3d2;border-radius:8px;padding:8px 10px;font-size:11px;color:#2c4a3e}
+.lookup-popover .lookup-actions{margin-top:6px;display:flex;gap:8px}
+.lookup-popover button{border:none;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;cursor:pointer}
+.lookup-popover .lookup-use{background:#8bc53f;color:#12291f}
+.lookup-popover .lookup-cancel{background:#e3ece3;color:#425a4e}
+body.dark .lookup-popover{background:#132630;border-color:#28424d;color:#c9d9d2}
+body.dark .lookup-popover .lookup-cancel{background:#17313b;color:#c9d9d2}
+/* --- Animaciones del personaje --- */
+@keyframes mm-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes mm-float-slow{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes mm-bounce-in{0%{transform:scale(.7) translateY(12px) rotate(0)}45%{transform:scale(1.12) translateY(-8px) rotate(-4deg)}70%{transform:scale(.96) translateY(2px) rotate(3deg)}100%{transform:scale(1) translateY(0) rotate(0)}}
+@keyframes mm-shake{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-5px) rotate(-4deg)}30%{transform:translateX(5px) rotate(4deg)}45%{transform:translateX(-4px) rotate(-3deg)}60%{transform:translateX(4px) rotate(3deg)}75%{transform:translateX(-2px) rotate(-1deg)}100%{transform:translateX(0) rotate(0)}}
+@keyframes mm-nod{0%,100%{transform:rotate(0) translateY(0)}30%{transform:rotate(-3deg) translateY(-2px)}60%{transform:rotate(3deg) translateY(0)}}
+@keyframes mm-spin{to{transform:rotate(360deg)}}
+
+#verdictImg{animation:mm-float 3s ease-in-out infinite;transform-origin:center bottom}
+#verdictImg.react-good{animation:mm-bounce-in .65s ease}
+#verdictImg.react-bad{animation:mm-shake .55s ease}
+#verdictImg.react-neutral{animation:mm-nod .6s ease}
+#whyImg{animation:mm-float-slow 3.6s ease-in-out .3s infinite}
+
+.legend-card img{transition:transform .15s ease}
+.legend-card:hover img{animation:mm-float .5s ease}
+
+.field-lookup-btn.loading{animation:mm-spin 1s linear infinite}
+
+.moro-tip img{animation:mm-float-slow 4s ease-in-out infinite}
+
+@media (prefers-reduced-motion:reduce){
+  #verdictImg,#whyImg,.legend-card:hover img,.field-lookup-btn.loading,.moro-tip img,#verdictImg.react-good,#verdictImg.react-bad,#verdictImg.react-neutral{animation:none}
+}

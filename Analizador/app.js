@@ -43,6 +43,85 @@ function EVAL_UNFAV(){return T('analyzer.eval.unfavorable','Desfavorable')}
 function EVAL_LOW(){return T('analyzer.eval.low','Baja')}
 function EVAL_LONG(){return T('analyzer.eval.long','Largo')}
 
+// --- Buscar dato con el chatbot ------------------------------------------
+// Solo para campos que representan un dato de mercado real y consultable
+// (precio, dividendo, EPS, valor en libros de acciones/ETF; tasa de un CDT).
+// Cosas como "cuántos años te vas a quedar" son decisiones del usuario, no
+// datos que se puedan buscar, así que esos campos no tienen este botón.
+const LOOKUP_WORKER_URL='https://monkeymoney.1144034881.workers.dev';
+const LOOKUP_QUERIES={
+  acciones:{
+    price:name=>`¿Cuál es el precio actual por acción de ${name} en bolsa? Responde ÚNICAMENTE con el número en pesos colombianos, sin texto adicional, sin símbolo de moneda ni separador de miles, usando punto como separador decimal.`,
+    dividend:name=>`¿Cuál es el dividendo anual por acción más reciente de ${name}? Responde ÚNICAMENTE con el número, sin texto adicional, sin símbolo de moneda ni separador de miles, usando punto como separador decimal. Si no reparte dividendos, responde 0.`,
+    eps:name=>`¿Cuál es la utilidad por acción (EPS) más reciente de ${name}? Responde ÚNICAMENTE con el número, sin texto adicional, sin símbolo de moneda ni separador de miles, usando punto como separador decimal.`,
+    book:name=>`¿Cuál es el valor en libros (book value) por acción más reciente de ${name}? Responde ÚNICAMENTE con el número, sin texto adicional, sin símbolo de moneda ni separador de miles, usando punto como separador decimal.`
+  },
+  etf:{
+    price:name=>`¿Cuál es el precio actual por participación del ETF o fondo ${name}? Responde ÚNICAMENTE con el número, sin texto adicional, sin símbolo de moneda ni separador de miles, usando punto como separador decimal.`,
+    dividend:name=>`¿Cuál es la distribución o dividendo anual por participación más reciente del ETF o fondo ${name}? Responde ÚNICAMENTE con el número, sin texto adicional. Si no reparte, responde 0.`
+  },
+  cdt:{
+    growth:name=>`¿Qué tasa efectiva anual (%) ofrecen actualmente los bancos en Colombia para un ${name}? Responde ÚNICAMENTE con el número del porcentaje, sin el símbolo %, sin texto adicional.`
+  }
+};
+function parseLookupNumber(text){
+  if(!text)return null;
+  const m=text.trim().match(/-?\d[\d.,]*/);
+  if(!m)return null;
+  let raw=m[0];
+  const hasDot=raw.includes('.'),hasComma=raw.includes(',');
+  if(hasDot&&hasComma){
+    raw=raw.lastIndexOf(',')>raw.lastIndexOf('.')?raw.replace(/\./g,'').replace(',','.'):raw.replace(/,/g,'');
+  }else if(hasComma&&!hasDot){
+    const parts=raw.split(',');
+    raw=(parts.length===2&&parts[1].length<=2)?raw.replace(',','.'):raw.replace(/,/g,'');
+  }
+  const num=parseFloat(raw);
+  return isNaN(num)?null:num;
+}
+function showLookupPopover(btn,id,num,rawReply,failed){
+  document.querySelectorAll('.lookup-popover').forEach(p=>p.remove());
+  const wrap=btn.closest('.field-with-lookup');
+  if(!wrap)return;
+  const pop=document.createElement('div');
+  pop.className='lookup-popover';
+  if(failed){
+    pop.innerHTML=`<p>${T('analyzer.lookup.error','No pudimos buscar este dato ahora mismo. Intenta de nuevo en un momento.')}</p><div class="lookup-actions"><button type="button" class="lookup-cancel">${T('analyzer.lookup.dismiss','Cerrar')}</button></div>`;
+  }else if(num!==null){
+    pop.innerHTML=`<p>${T('analyzer.lookup.found','Encontramos:')} <b>${num}</b></p><div class="lookup-actions"><button type="button" class="lookup-use">${T('analyzer.lookup.use','Usar este valor')}</button><button type="button" class="lookup-cancel">${T('analyzer.lookup.dismiss','Cerrar')}</button></div>`;
+    pop.querySelector('.lookup-use').addEventListener('click',()=>{$(id).value=num;calc();pop.remove()});
+  }else{
+    const safeReply=(rawReply||'').slice(0,220).replace(/</g,'&lt;');
+    pop.innerHTML=`<p>${T('analyzer.lookup.unclear','El chatbot respondió, pero no pudimos leer un número claro:')} "${safeReply}"</p><div class="lookup-actions"><button type="button" class="lookup-cancel">${T('analyzer.lookup.dismiss','Cerrar')}</button></div>`;
+  }
+  pop.querySelector('.lookup-cancel').addEventListener('click',()=>pop.remove());
+  wrap.insertAdjacentElement('afterend',pop);
+}
+async function handleLookup(btn){
+  const id=btn.dataset.lookupId;
+  const type=activeType;
+  const queries=LOOKUP_QUERIES[type];
+  if(!queries||!queries[id])return;
+  const name=$('name')?$('name').value.trim():'';
+  if(!name){alert(T('analyzer.lookup.needName','Primero escribe el nombre en el campo de arriba.'));return}
+  document.querySelectorAll('.lookup-popover').forEach(p=>p.remove());
+  if(btn.classList.contains('loading'))return;
+  btn.classList.add('loading');
+  const original=btn.textContent;
+  btn.textContent='⏳';
+  try{
+    const resp=await fetch(LOOKUP_WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:queries[id](name),history:[]})});
+    const data=await resp.json();
+    const reply=data&&data.reply?data.reply:'';
+    showLookupPopover(btn,id,parseLookupNumber(reply),reply,false);
+  }catch(e){
+    showLookupPopover(btn,id,null,null,true);
+  }finally{
+    btn.classList.remove('loading');
+    btn.textContent=original;
+  }
+}
+
 function setAnalysisForm(type){
   activeType=type;
   const c=TYPE[type];
@@ -52,16 +131,16 @@ function setAnalysisForm(type){
   const L=(key,fallback)=>simple?T(key+'.simple',fallback):T(key,fallback);
   const templates={
     acciones:[
-      [L('analyzer.field.acciones.name','¿Qué acción es?'),'text','name',T('analyzer.default.acciones.name','Ecopetrol (ECOPETROL)')],[L('analyzer.field.acciones.price','¿Cuánto cuesta hoy una acción?'),'number','price','1950'],[L('analyzer.field.acciones.shares','¿Cuántas acciones vas a comprar?'),'number','shares','1000'],[L('analyzer.field.acciones.dividend','¿Cuánto te paga al año por cada acción?'),'number','dividend','120'],[L('analyzer.field.acciones.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','5'],[L('analyzer.field.acciones.growth','¿Cuánto crees que va a crecer la empresa al año (%)?'),'number','growth','8'],[L('analyzer.field.acciones.eps','¿Cuánto gana la empresa por cada acción al año?'),'number','eps','240'],[L('analyzer.field.acciones.book','Si la empresa cerrara hoy, ¿cuánto valdría cada acción en papel?'),'number','book','1000'],[L('analyzer.field.acciones.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','10'],[L('analyzer.field.acciones.horizon','¿Por cuántos años piensas quedarte con esta inversión?'),'number','horizon','5']
+      [L('analyzer.field.acciones.name','¿Qué acción es?'),'text','name',T('analyzer.default.acciones.name','Ecopetrol (ECOPETROL)')],[L('analyzer.field.acciones.price','¿Cuánto cuesta hoy una acción?'),'number','price','1950',true],[L('analyzer.field.acciones.shares','¿Cuántas acciones vas a comprar?'),'number','shares','1000'],[L('analyzer.field.acciones.dividend','¿Cuánto te paga al año por cada acción?'),'number','dividend','120',true],[L('analyzer.field.acciones.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','5'],[L('analyzer.field.acciones.growth','¿Cuánto crees que va a crecer la empresa al año (%)?'),'number','growth','8'],[L('analyzer.field.acciones.eps','¿Cuánto gana la empresa por cada acción al año?'),'number','eps','240',true],[L('analyzer.field.acciones.book','Si la empresa cerrara hoy, ¿cuánto valdría cada acción en papel?'),'number','book','1000',true],[L('analyzer.field.acciones.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','10'],[L('analyzer.field.acciones.horizon','¿Por cuántos años piensas quedarte con esta inversión?'),'number','horizon','5']
     ],
     inmuebles:[
       [L('analyzer.field.inmuebles.name','¿Qué inmueble es?'),'text','name',T('analyzer.default.inmuebles.name','Apartamento / Local')],[L('analyzer.field.inmuebles.price','¿Cuánto cuesta comprarlo?'),'number','price','300000000'],[L('analyzer.field.inmuebles.shares','¿Cuántos inmuebles como este vas a comprar?'),'number','shares','1'],[L('analyzer.field.inmuebles.dividend','¿Cuánto arriendo recibirías al mes?'),'number','dividend','1800000'],[L('analyzer.field.inmuebles.divGrowth','¿Ese arriendo sube cada año? ¿Cuánto (%)?'),'number','divGrowth','4'],[L('analyzer.field.inmuebles.growth','¿Cuánto crees que va a subir de valor al año (%)?'),'number','growth','6'],[L('analyzer.field.inmuebles.expenses','¿Cuánto gastas al mes en mantenerlo?'),'number','expenses','350000'],[L('analyzer.field.inmuebles.occupancy','¿Qué tanto del tiempo esperas tenerlo arrendado (%)?'),'number','occupancy','95'],[L('analyzer.field.inmuebles.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','10'],[L('analyzer.field.inmuebles.horizon','¿Por cuántos años piensas quedarte con él?'),'number','horizon','10']
     ],
     cdt:[
-      [L('analyzer.field.cdt.name','¿Qué CDT o producto es?'),'text','name',T('analyzer.default.cdt.name','CDT a 1 año')],[L('analyzer.field.cdt.price','¿Cuánto vas a poner inicialmente?'),'number','price','10000000'],[L('analyzer.field.cdt.shares','¿Cuántos CDT o cuentas como este vas a abrir?'),'number','shares','1'],[L('analyzer.field.cdt.growth','¿Qué tasa de interés te ofrecen al año (%)?'),'number','growth','9'],[L('analyzer.field.cdt.horizon','¿A cuántos años es el plazo?'),'number','horizon','1'],[L('analyzer.field.cdt.inflation','¿Cuánto crees que va a subir el costo de vida al año (%)?'),'number','inflation','5'],[L('analyzer.field.cdt.tax','¿Cuánto te descuentan de impuestos sobre lo que ganas (%)?'),'number','tax','4'],[L('analyzer.field.cdt.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','8']
+      [L('analyzer.field.cdt.name','¿Qué CDT o producto es?'),'text','name',T('analyzer.default.cdt.name','CDT a 1 año')],[L('analyzer.field.cdt.price','¿Cuánto vas a poner inicialmente?'),'number','price','10000000'],[L('analyzer.field.cdt.shares','¿Cuántos CDT o cuentas como este vas a abrir?'),'number','shares','1'],[L('analyzer.field.cdt.growth','¿Qué tasa de interés te ofrecen al año (%)?'),'number','growth','9',true],[L('analyzer.field.cdt.horizon','¿A cuántos años es el plazo?'),'number','horizon','1'],[L('analyzer.field.cdt.inflation','¿Cuánto crees que va a subir el costo de vida al año (%)?'),'number','inflation','5'],[L('analyzer.field.cdt.tax','¿Cuánto te descuentan de impuestos sobre lo que ganas (%)?'),'number','tax','4'],[L('analyzer.field.cdt.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','8']
     ],
     etf:[
-      [L('analyzer.field.etf.name','¿Qué ETF o fondo es?'),'text','name',T('analyzer.default.etf.name','ETF global')],[L('analyzer.field.etf.price','¿Cuánto cuesta hoy una participación?'),'number','price','400'],[L('analyzer.field.etf.shares','¿Cuántas participaciones vas a comprar?'),'number','shares','25'],[L('analyzer.field.etf.dividend','¿Cuánto te paga al año por cada participación?'),'number','dividend','6'],[L('analyzer.field.etf.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','7'],[L('analyzer.field.etf.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','4'],[L('analyzer.field.etf.expensesRate','¿Cuánto te cobra el fondo al año por administrarlo (%)?'),'number','expensesRate','0.2'],[L('analyzer.field.etf.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','9'],[L('analyzer.field.etf.horizon','¿Por cuántos años piensas quedarte con esto?'),'number','horizon','5']
+      [L('analyzer.field.etf.name','¿Qué ETF o fondo es?'),'text','name',T('analyzer.default.etf.name','ETF global')],[L('analyzer.field.etf.price','¿Cuánto cuesta hoy una participación?'),'number','price','400',true],[L('analyzer.field.etf.shares','¿Cuántas participaciones vas a comprar?'),'number','shares','25'],[L('analyzer.field.etf.dividend','¿Cuánto te paga al año por cada participación?'),'number','dividend','6',true],[L('analyzer.field.etf.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','7'],[L('analyzer.field.etf.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','4'],[L('analyzer.field.etf.expensesRate','¿Cuánto te cobra el fondo al año por administrarlo (%)?'),'number','expensesRate','0.2'],[L('analyzer.field.etf.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','9'],[L('analyzer.field.etf.horizon','¿Por cuántos años piensas quedarte con esto?'),'number','horizon','5']
     ],
     negocios:[
       [L('analyzer.field.negocios.name','¿Qué negocio o proyecto es?'),'text','name',T('analyzer.default.negocios.name','Negocio / Proyecto')],[L('analyzer.field.negocios.price','¿Cuánto necesitas invertir para empezar?'),'number','price','50000000'],[L('analyzer.field.negocios.shares','¿Cuántos negocios o proyectos como este vas a hacer?'),'number','shares','1'],[L('analyzer.field.negocios.revenue','¿Cuánto esperas vender al año?'),'number','revenue','30000000'],[L('analyzer.field.negocios.margin','De lo que vendes, ¿qué porcentaje te queda limpio (%)?'),'number','margin','20'],[L('analyzer.field.negocios.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','8'],[L('analyzer.field.negocios.expenses','¿Cuánto gastas al año en mantenerlo?'),'number','expenses','3000000'],[L('analyzer.field.negocios.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','12'],[L('analyzer.field.negocios.horizon','¿En cuántos años esperas ver resultados?'),'number','horizon','5']
@@ -72,10 +151,12 @@ function setAnalysisForm(type){
   };
   const rows=templates[type];
   g.innerHTML=rows.map(r=>{
-    const [label,kind,id,val]=r;
+    const [label,kind,id,val,lookup]=r;
     const cls=kind==='number'?'number-input':'';
     const hint=id==='discount'?`<small class="field-hint" style="grid-column:1/-1">${T('analyzer.field.discountHint','¿No sabes qué poner? Usa 8-12% como referencia.')}</small>`:'';
-    return `<label>${label}</label><input class="${cls}" id="${id}" type="${kind}" value="${val}" step="any">${hint}`;
+    const lookupBtn=lookup?`<button type="button" class="field-lookup-btn" data-lookup-id="${id}" title="${T('analyzer.lookup.tooltip','Preguntarle al chatbot')}">🔍</button>`:'';
+    const wrapClass=lookup?'field-with-lookup':'';
+    return `<label>${label}</label><div class="${wrapClass}"><input class="${cls}" id="${id}" type="${kind}" value="${val}" step="any">${lookupBtn}</div>${hint}`;
   }).join('');
   const formIds=rows.map(r=>r[2]);
   formIds.forEach(id=>$(id)?.addEventListener('input',calc));
@@ -103,7 +184,17 @@ function updateMeaning(type){
   $('meaningList').innerHTML=(texts[type]||texts.otra).map(x=>`<li>${x}</li>`).join('');
 }
 
-function renderState(kind){const d=kindData(kind);const card=$('verdictCard'),pill=$('verdict'),why=$('whyCard');card.classList.remove('state-good','state-neutral','state-bad');card.classList.add('state-'+kind);pill.className='verdict-pill '+d.pill;why.classList.remove('state-good','state-neutral','state-bad');why.classList.add('state-'+kind);$('verdictImg').src=`assets/${d.central}`;$('whyImg').src=`assets/${d.img}`;$('verdict').textContent=d.label;$('whyLabel').textContent=d.label;return d}
+let _lastVerdictKind=null;
+function renderState(kind){const d=kindData(kind);const card=$('verdictCard'),pill=$('verdict'),why=$('whyCard');card.classList.remove('state-good','state-neutral','state-bad');card.classList.add('state-'+kind);pill.className='verdict-pill '+d.pill;why.classList.remove('state-good','state-neutral','state-bad');why.classList.add('state-'+kind);$('verdictImg').src=`assets/${d.central}`;$('whyImg').src=`assets/${d.img}`;$('verdict').textContent=d.label;$('whyLabel').textContent=d.label;
+  if(kind!==_lastVerdictKind){
+    _lastVerdictKind=kind;
+    const img=$('verdictImg');
+    img.classList.remove('react-good','react-neutral','react-bad');
+    void img.offsetWidth; // reinicia la animación aunque sea la misma clase que antes
+    img.classList.add('react-'+kind);
+    img.addEventListener('animationend',()=>img.classList.remove('react-'+kind),{once:true});
+  }
+  return d}
 
 // --- Loan / leverage --------------------------------------------------
 // Reads the "¿Vas a pedir un préstamo?" card. Used by every calc*()
@@ -422,6 +513,10 @@ function wire(){
   $('darkMode').addEventListener('change',e=>{document.body.classList.toggle('dark',e.target.checked);localStorage.setItem('mm_dark',e.target.checked?'1':'0');calc();});
   $('showWarnings').addEventListener('change',e=>document.querySelector('.warning').style.display=e.target.checked?'block':'none');
   window.addEventListener('resize',calc);
+  $('analysisFormGrid')?.addEventListener('click',e=>{
+    const btn=e.target.closest('.field-lookup-btn');
+    if(btn)handleLookup(btn);
+  });
   $('modeSimple')?.addEventListener('click',()=>{setModeLocal('simple');applyMode();setAnalysisForm(activeType)});
   $('modeAdvanced')?.addEventListener('click',()=>{setModeLocal('avanzado');applyMode();setAnalysisForm(activeType)});
   $('toggleDetailsBtn')?.addEventListener('click',()=>{
