@@ -337,16 +337,19 @@ function calcETF(){
 }
 function calcCripto(){
   const price=n('price'), units=Math.max(0.00001,n('shares')), growth=n('growth')/100, staking=n('staking')/100, volatility=clamp(n('volatility')||7,1,10), fees=n('fees')/100, disc=n('discount')/100, horizon=Math.max(1,n('horizon'));
-  const initial=price*units; const netGrowth=growth-fees; const gain=initial*((1+Math.max(-.99,netGrowth))**horizon-1); const divs=staking?initial*staking*horizon:0; const expected=netGrowth+staking; const cushion=expected>0?clamp((expected-disc)/expected,0,1):0;
+  const initial=price*units; const netGrowth=growth-fees; const gain=initial*((1+Math.max(-.99,netGrowth))**horizon-1);
+  // El staking se paga a diario y compone sobre capital + recompensas ya acumuladas
+  // (interés compuesto diario), no como un pago simple una vez al año.
+  const stakingDaily=staking/365; const stakingEff=staking?((1+stakingDaily)**365-1):0; const divs=staking?initial*((1+stakingDaily)**(365*horizon)-1):0; const expected=netGrowth+stakingEff; const cushion=expected>0?clamp((expected-disc)/expected,0,1):0;
   const loan=getLoanInfo(initial,horizon);
   const leverage=loanSpreadMetric(expected,loan);
   const evalLabel=k=>k==='good'?EVAL_FAV():k==='neutral'?EVAL_NEU():EVAL_UNFAV();
   const volKind=volatility<=4?'good':volatility<=7?'neutral':'bad';
   const feesKind=fees<.01?'good':fees<.03?'neutral':'bad';
-  const pts=[relDisc(netGrowth,disc,1,.6),relDisc(staking,disc,.4,.15),volKind,feesKind,leverage.kind,cushion>.30?'good':cushion>.10?'neutral':'bad'];
-  const metrics=[{value:pct(netGrowth),kind:pts[0],label:evalLabel(pts[0])},{value:pct(staking),kind:pts[1],label:staking>0?evalLabel(pts[1]):T('analyzer.eval.none','Sin staking')},{value:volatility.toFixed(0)+'/10',kind:volKind,label:evalLabel(volKind)},{value:pct(fees),kind:feesKind,label:evalLabel(feesKind)},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:pct(cushion),kind:pts[5],label:evalLabel(pts[5])}];
+  const pts=[relDisc(netGrowth,disc,1,.6),relDisc(stakingEff,disc,.4,.15),volKind,feesKind,leverage.kind,cushion>.30?'good':cushion>.10?'neutral':'bad'];
+  const metrics=[{value:pct(netGrowth),kind:pts[0],label:evalLabel(pts[0])},{value:pct(stakingEff),kind:pts[1],label:staking>0?evalLabel(pts[1]):T('analyzer.eval.none','Sin staking')},{value:volatility.toFixed(0)+'/10',kind:volKind,label:evalLabel(volKind)},{value:pct(fees),kind:feesKind,label:evalLabel(feesKind)},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:pct(cushion),kind:pts[5],label:evalLabel(pts[5])}];
   const reasons=[T('analyzer.reason.cripto.growth','Crecimiento neto estimado después de comisiones: {v}.').replace('{v}',pct(netGrowth))];
-  if(staking>0) reasons.push(T('analyzer.reason.cripto.staking','El staking aporta un rendimiento adicional de {v} al año.').replace('{v}',pct(staking)));
+  if(staking>0) reasons.push(T('analyzer.reason.cripto.staking','El staking paga a diario y compone sobre lo acumulado: con una tasa nominal de {n} al año, tu rendimiento efectivo real es {v} al año.').replace('{n}',pct(staking)).replace('{v}',pct(stakingEff)));
   if(volatility>=7) reasons.push(T('analyzer.reason.cripto.volHigh','La volatilidad que ingresaste es alta ({v}/10); considera invertir solo una porción pequeña de tu portafolio.').replace('{v}',volatility.toFixed(0)));
   else if(volatility<=3) reasons.push(T('analyzer.reason.cripto.volLow','La volatilidad que ingresaste es relativamente baja para una criptomoneda ({v}/10).').replace('{v}',volatility.toFixed(0)));
   updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons,chartGrowth:netGrowth,type:'cripto',loan,loanCountedInScore:true,raw:{netGrowth,volatility,cushion}});
