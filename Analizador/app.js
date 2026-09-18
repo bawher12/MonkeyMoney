@@ -19,6 +19,7 @@ const TYPE = {
   inmuebles:{title:T('analyzer.type.inmuebles.title','Inmuebles'),icon:'🏠',subtitle:T('analyzer.type.inmuebles.subtitle','Estudia precio, renta, gastos, ocupación, valorización y rendimiento del inmueble.')},
   cdt:{title:T('analyzer.type.cdt.title','CDT / Renta fija'),icon:'🏦',subtitle:T('analyzer.type.cdt.subtitle','Calcula rendimiento de un CDT o instrumento de renta fija considerando plazo y tasa.')},
   etf:{title:T('analyzer.type.etf.title','ETF / Fondos'),icon:'📊',subtitle:T('analyzer.type.etf.subtitle','Analiza costos, dividendos, crecimiento esperado y rendimiento de un ETF o fondo.')},
+  cripto:{title:T('analyzer.type.cripto.title','Criptomonedas'),icon:'🪙',subtitle:T('analyzer.type.cripto.subtitle','Analiza precio, volatilidad, staking y crecimiento esperado de una criptomoneda.')},
   negocios:{title:T('analyzer.type.negocios.title','Negocios / Proyectos'),icon:'💼',subtitle:T('analyzer.type.negocios.subtitle','Evalúa retorno, margen, crecimiento, recuperación de la inversión y riesgo del proyecto.')},
   otra:{title:T('analyzer.type.otra.title','Otra inversión'),icon:'🧩',subtitle:T('analyzer.type.otra.subtitle',"Usa un modelo general para estudiar inversiones que no encajan en las categorías anteriores.")}
 };
@@ -62,6 +63,9 @@ const LOOKUP_QUERIES={
   },
   cdt:{
     growth:name=>`¿Qué tasa efectiva anual (%) ofrecen actualmente los bancos en Colombia para un ${name}? Responde ÚNICAMENTE con el número del porcentaje, sin el símbolo %, sin texto adicional.`
+  },
+  cripto:{
+    price:name=>`¿Cuál es el precio actual de 1 unidad de la criptomoneda ${name} en pesos colombianos? Responde ÚNICAMENTE con el número en pesos colombianos, sin texto adicional, sin símbolo de moneda ni separador de miles, usando punto como separador decimal.`
   }
 };
 function parseLookupNumber(text){
@@ -142,6 +146,9 @@ function setAnalysisForm(type){
     etf:[
       [L('analyzer.field.etf.name','¿Qué ETF o fondo es?'),'text','name',T('analyzer.default.etf.name','ETF global')],[L('analyzer.field.etf.price','¿Cuánto cuesta hoy una participación?'),'number','price','400',true],[L('analyzer.field.etf.shares','¿Cuántas participaciones vas a comprar?'),'number','shares','25'],[L('analyzer.field.etf.dividend','¿Cuánto te paga al año por cada participación?'),'number','dividend','6',true],[L('analyzer.field.etf.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','7'],[L('analyzer.field.etf.divGrowth','¿Ese pago crece cada año? ¿Cuánto (%)?'),'number','divGrowth','4'],[L('analyzer.field.etf.expensesRate','¿Cuánto te cobra el fondo al año por administrarlo (%)?'),'number','expensesRate','0.2'],[L('analyzer.field.etf.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','9'],[L('analyzer.field.etf.horizon','¿Por cuántos años piensas quedarte con esto?'),'number','horizon','5']
     ],
+    cripto:[
+      [L('analyzer.field.cripto.name','¿Qué criptomoneda es?'),'text','name',T('analyzer.default.cripto.name','Bitcoin (BTC)')],[L('analyzer.field.cripto.price','¿Cuánto cuesta hoy 1 unidad?'),'number','price','420000000',true],[L('analyzer.field.cripto.shares','¿Cuántas unidades (o fracciones) vas a comprar?'),'number','shares','0.05'],[L('analyzer.field.cripto.growth','¿Cuánto crees que va a subir de precio al año (%)?'),'number','growth','15'],[L('analyzer.field.cripto.staking','¿Ofrece staking o recompensas? ¿Cuánto al año (%)?'),'number','staking','0'],[L('analyzer.field.cripto.volatility','¿Qué tan volátil crees que es, de 1 (poco) a 10 (mucho)?'),'number','volatility','7'],[L('analyzer.field.cripto.fees','¿Cuánto te cobra el exchange o wallet al año en comisiones (%)?'),'number','fees','0.5'],[L('analyzer.field.cripto.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','15'],[L('analyzer.field.cripto.horizon','¿Por cuántos años piensas quedarte con esta inversión?'),'number','horizon','4']
+    ],
     negocios:[
       [L('analyzer.field.negocios.name','¿Qué negocio o proyecto es?'),'text','name',T('analyzer.default.negocios.name','Negocio / Proyecto')],[L('analyzer.field.negocios.price','¿Cuánto necesitas invertir para empezar?'),'number','price','50000000'],[L('analyzer.field.negocios.shares','¿Cuántos negocios o proyectos como este vas a hacer?'),'number','shares','1'],[L('analyzer.field.negocios.revenue','¿Cuánto esperas vender al año?'),'number','revenue','30000000'],[L('analyzer.field.negocios.margin','De lo que vendes, ¿qué porcentaje te queda limpio (%)?'),'number','margin','20'],[L('analyzer.field.negocios.growth','¿Cuánto crees que va a crecer al año (%)?'),'number','growth','8'],[L('analyzer.field.negocios.expenses','¿Cuánto gastas al año en mantenerlo?'),'number','expenses','3000000'],[L('analyzer.field.negocios.discount','¿Qué tanto esperas ganar al año, como mínimo (%)?'),'number','discount','12'],[L('analyzer.field.negocios.horizon','¿En cuántos años esperas ver resultados?'),'number','horizon','5']
     ],
@@ -166,6 +173,7 @@ function setAnalysisForm(type){
     inmuebles:[T('analyzer.metric.inmuebles.0','Rendimiento bruto'),T('analyzer.metric.inmuebles.1','Rendimiento neto'),T('analyzer.metric.inmuebles.2','Valorización anual'),T('analyzer.metric.inmuebles.3','Ocupación'),T('analyzer.metric.inmuebles.4','Apalancamiento'),T('analyzer.metric.inmuebles.5','Recuperación')],
     cdt:[T('analyzer.metric.cdt.0','Tasa efectiva anual'),T('analyzer.metric.cdt.1','Rendimiento neto'),T('analyzer.metric.cdt.2','Rendimiento real'),T('analyzer.metric.cdt.3','Plazo'),T('analyzer.metric.cdt.4','Retención / impuestos'),T('analyzer.metric.cdt.5','Apalancamiento')],
     etf:[T('analyzer.metric.etf.0','Crecimiento neto'),T('analyzer.metric.etf.1','Dividend Yield'),T('analyzer.metric.etf.2','TER <small>(costo del fondo)</small>'),T('analyzer.metric.etf.3','Eficiencia de costos'),T('analyzer.metric.etf.4','Apalancamiento'),T('analyzer.metric.etf.5','Participaciones')],
+    cripto:[T('analyzer.metric.cripto.0','Crecimiento neto'),T('analyzer.metric.cripto.1','Staking / Recompensas'),T('analyzer.metric.cripto.2','Volatilidad'),T('analyzer.metric.cripto.3','Comisiones'),T('analyzer.metric.cripto.4','Apalancamiento'),T('analyzer.metric.cripto.5','Colchón sobre tu mínimo')],
     negocios:[T('analyzer.metric.negocios.0','ROI'),T('analyzer.metric.negocios.1','Margen neto'),T('analyzer.metric.negocios.2','Crecimiento'),T('analyzer.metric.negocios.3','Apalancamiento'),T('analyzer.metric.negocios.4','Recuperación'),T('analyzer.metric.negocios.5','Margen real')],
     otra:[T('analyzer.metric.otra.0','Rendimiento directo'),T('analyzer.metric.otra.1','Crecimiento'),T('analyzer.metric.otra.2','Apalancamiento'),T('analyzer.metric.otra.3','Ingreso neto'),T('analyzer.metric.otra.4','Eficiencia'),T('analyzer.metric.otra.5','Datos completos')]
   }[type];
@@ -178,6 +186,7 @@ function updateMeaning(type){
     inmuebles:[T('analyzer.meaning.inmuebles.0','<b>Rendimiento bruto:</b> arriendo anual frente al precio.'),T('analyzer.meaning.inmuebles.1','<b>Rendimiento neto:</b> descuenta gastos y vacancia.'),T('analyzer.meaning.inmuebles.2','<b>Valorización:</b> crecimiento esperado del valor del inmueble.'),T('analyzer.meaning.inmuebles.3','<b>Ocupación:</b> porcentaje de tiempo con ingreso de renta.')],
     cdt:[T('analyzer.meaning.cdt.0','<b>TEA:</b> tasa efectiva anual ofrecida.'),T('analyzer.meaning.cdt.1','<b>Inflación:</b> pérdida esperada de poder adquisitivo.'),T('analyzer.meaning.cdt.2','<b>Retención:</b> impuesto o retención aplicada al rendimiento.'),T('analyzer.meaning.cdt.3','<b>Rendimiento real:</b> retorno después de inflación.')],
     etf:[T('analyzer.meaning.etf.0','<b>TER:</b> costo anual del fondo.'),T('analyzer.meaning.etf.1','<b>Dividend Yield:</b> ingreso distribuido frente al precio.'),T('analyzer.meaning.etf.2','<b>Crecimiento:</b> apreciación esperada del fondo.'),T('analyzer.meaning.etf.3','<b>Diversificación:</b> distribuir exposición entre múltiples activos.')],
+    cripto:[T('analyzer.meaning.cripto.0','<b>Volatilidad:</b> qué tanto sube y baja el precio en el corto plazo.'),T('analyzer.meaning.cripto.1','<b>Staking:</b> recompensa por mantener o bloquear tus monedas.'),T('analyzer.meaning.cripto.2','<b>Comisiones:</b> lo que cobra el exchange o wallet por custodiar o mover tus monedas.'),T('analyzer.meaning.cripto.3','<b>Colchón:</b> qué tanto margen tienes frente al mínimo que esperas ganar.')],
     negocios:[T('analyzer.meaning.negocios.0','<b>Margen neto:</b> utilidad después de costos y gastos.'),T('analyzer.meaning.negocios.1','<b>Flujo de caja:</b> efectivo disponible del proyecto.'),T('analyzer.meaning.negocios.2','<b>ROI:</b> retorno sobre el capital invertido.'),T('analyzer.meaning.negocios.3','<b>Recuperación:</b> tiempo para recuperar el capital.')],
     otra:[T('analyzer.meaning.otra.0','<b>Ingreso anual:</b> dinero generado por el activo.'),T('analyzer.meaning.otra.1','<b>Costos:</b> egresos necesarios para mantenerlo.'),T('analyzer.meaning.otra.2','<b>Rentabilidad:</b> retorno respecto al capital.'),T('analyzer.meaning.otra.3','<b>Tasa de descuento:</b> rendimiento mínimo exigido.')]
   };
@@ -239,6 +248,7 @@ function calc(){
   if(activeType==='inmuebles') return calcInmuebles();
   if(activeType==='cdt') return calcCDT();
   if(activeType==='etf') return calcETF();
+  if(activeType==='cripto') return calcCripto();
   if(activeType==='negocios') return calcNegocio();
   return calcOtra();
 }
@@ -276,6 +286,7 @@ function updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reas
     inmuebles:T('analyzer.resulttitle.inmuebles','Resultados del inmueble'),
     cdt:T('analyzer.resulttitle.cdt','Resultados del CDT / renta fija'),
     etf:T('analyzer.resulttitle.etf','Resultados del ETF / fondo'),
+    cripto:T('analyzer.resulttitle.cripto','Resultados de la criptomoneda'),
     negocios:T('analyzer.resulttitle.negocios','Resultados del negocio / proyecto'),
     otra:T('analyzer.resulttitle.otra','Resultados de la inversión')
   };
@@ -320,6 +331,22 @@ function calcETF(){
   const metrics=[{value:pct(netGrowth),kind:pts[0],label:T('analyzer.pill.etf.0','Neto')},{value:pct(dy),kind:pts[1],label:T('analyzer.pill.etf.1','Favorable')},{value:pct(ter),kind:pts[2],label:T('analyzer.pill.etf.2','Bajo costo')},{value:pct(costEfficiency),kind:pts[3],label:T('analyzer.pill.etf.3','Eficiencia')},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:shares.toString(),kind:pts[5],label:T('analyzer.pill.etf.5','Participaciones')}];
   updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons:[T('analyzer.reason.etf.growth','Crecimiento neto estimado después de TER: {v}.').replace('{v}',pct(netGrowth)),T('analyzer.reason.etf.dy','Dividend Yield estimado: {v}.').replace('{v}',pct(dy)),T('analyzer.reason.etf.cost','Costo anual del fondo: {v}.').replace('{v}',pct(ter))],chartGrowth:netGrowth,type:'etf',loan,loanCountedInScore:true,raw:{costEfficiency}});
 }
+function calcCripto(){
+  const price=n('price'), units=Math.max(0.00001,n('shares')), growth=n('growth')/100, staking=n('staking')/100, volatility=clamp(n('volatility')||7,1,10), fees=n('fees')/100, disc=n('discount')/100, horizon=Math.max(1,n('horizon'));
+  const initial=price*units; const netGrowth=growth-fees; const gain=initial*((1+Math.max(-.99,netGrowth))**horizon-1); const divs=staking?initial*staking*horizon:0; const expected=netGrowth+staking; const cushion=expected>0?clamp((expected-disc)/expected,0,1):0;
+  const loan=getLoanInfo(initial,horizon);
+  const leverage=loanSpreadMetric(expected,loan);
+  const evalLabel=k=>k==='good'?EVAL_FAV():k==='neutral'?EVAL_NEU():EVAL_UNFAV();
+  const volKind=volatility<=4?'good':volatility<=7?'neutral':'bad';
+  const feesKind=fees<.01?'good':fees<.03?'neutral':'bad';
+  const pts=[relDisc(netGrowth,disc,1,.6),relDisc(staking,disc,.4,.15),volKind,feesKind,leverage.kind,cushion>.30?'good':cushion>.10?'neutral':'bad'];
+  const metrics=[{value:pct(netGrowth),kind:pts[0],label:evalLabel(pts[0])},{value:pct(staking),kind:pts[1],label:staking>0?evalLabel(pts[1]):T('analyzer.eval.none','Sin staking')},{value:volatility.toFixed(0)+'/10',kind:volKind,label:evalLabel(volKind)},{value:pct(fees),kind:feesKind,label:evalLabel(feesKind)},{value:leverage.value,kind:leverage.kind,label:leverage.label},{value:pct(cushion),kind:pts[5],label:evalLabel(pts[5])}];
+  const reasons=[T('analyzer.reason.cripto.growth','Crecimiento neto estimado después de comisiones: {v}.').replace('{v}',pct(netGrowth))];
+  if(staking>0) reasons.push(T('analyzer.reason.cripto.staking','El staking aporta un rendimiento adicional de {v} al año.').replace('{v}',pct(staking)));
+  if(volatility>=7) reasons.push(T('analyzer.reason.cripto.volHigh','La volatilidad que ingresaste es alta ({v}/10); considera invertir solo una porción pequeña de tu portafolio.').replace('{v}',volatility.toFixed(0)));
+  else if(volatility<=3) reasons.push(T('analyzer.reason.cripto.volLow','La volatilidad que ingresaste es relativamente baja para una criptomoneda ({v}/10).').replace('{v}',volatility.toFixed(0)));
+  updateDashboard({initial,gain,divs,expected,horizon,points:pts.map(k=>k==='good'?1:k==='neutral'?.5:0),metrics,reasons,chartGrowth:netGrowth,type:'cripto',loan,loanCountedInScore:true,raw:{netGrowth,volatility,cushion}});
+}
 function calcNegocio(){
   const inv=n('price'), units=Math.max(1,n('shares')), revenue=n('revenue'), margin=n('margin')/100, growth=n('growth')/100, expenses=n('expenses'), disc=n('discount')/100, horizon=Math.max(1,n('horizon')); const initial=inv*units, profit=Math.max(0,revenue*margin-expenses)*units, gain=profit*((1+growth)**horizon-1), divs=profit*0.6*((1+growth)**horizon-1)/(growth||1), expected=initial?profit/initial+growth:0, roi=initial?profit/initial:0, payback=profit?initial/profit:Infinity;
   const loan=getLoanInfo(initial,horizon);
@@ -347,6 +374,7 @@ const CHALLENGES=[
   {id:'ch_inmuebles_net',type:'inmuebles',icon:'🏠',title:'analyzer.challenge.net.title',desc:'analyzer.challenge.net.desc',check:raw=>raw.net>0.06},
   {id:'ch_cdt_real',type:'cdt',icon:'🏦',title:'analyzer.challenge.real.title',desc:'analyzer.challenge.real.desc',check:raw=>raw.real>0},
   {id:'ch_etf_eff',type:'etf',icon:'📊',title:'analyzer.challenge.eff.title',desc:'analyzer.challenge.eff.desc',check:raw=>raw.costEfficiency>0.9},
+  {id:'ch_cripto_cushion',type:'cripto',icon:'🪙',title:'analyzer.challenge.cripto.title',desc:'analyzer.challenge.cripto.desc',check:raw=>raw.cushion>0.30&&raw.volatility<=7},
   {id:'ch_negocios_roi',type:'negocios',icon:'💼',title:'analyzer.challenge.roi.title',desc:'analyzer.challenge.roi.desc',check:raw=>raw.roi>0.30},
   {id:'ch_otra_positive',type:'otra',icon:'🧩',title:'analyzer.challenge.otra.title',desc:'analyzer.challenge.otra.desc',check:raw=>raw.ret>0&&raw.net>0},
   {id:'ch_loan_carry',type:null,icon:'⚖️',title:'analyzer.challenge.loan.title',desc:'analyzer.challenge.loan.desc',check:(raw,expected,loan)=>loan&&loan.active&&(expected-loan.rate)>0.02},
@@ -382,7 +410,7 @@ function saveBadges(b){localStorage.setItem('mm_badges',JSON.stringify(b))}
 function getHistory(){try{return JSON.parse(localStorage.getItem('mm_history')||'[]')}catch(e){return[]}}
 function saveHistory(h){localStorage.setItem('mm_history',JSON.stringify(h))}
 function currentVerdictKind(){const el=$('verdict');if(!el)return'neutral';if(el.classList.contains('verdict-good'))return'good';if(el.classList.contains('verdict-bad'))return'bad';return'neutral'}
-const BADGE_ORDER=['acciones','inmuebles','cdt','etf','negocios','otra'];
+const BADGE_ORDER=['acciones','inmuebles','cdt','etf','cripto','negocios','otra'];
 function renderProgress(){
   renderChallenges();
   const badges=getBadges();
@@ -460,6 +488,7 @@ function refreshDynamicContent(){
     inmuebles:{title:T('analyzer.type.inmuebles.title','Inmuebles'),icon:'🏠',subtitle:T('analyzer.type.inmuebles.subtitle','Estudia precio, renta, gastos, ocupación, valorización y rendimiento del inmueble.')},
     cdt:{title:T('analyzer.type.cdt.title','CDT / Renta fija'),icon:'🏦',subtitle:T('analyzer.type.cdt.subtitle','Calcula rendimiento de un CDT o instrumento de renta fija considerando plazo y tasa.')},
     etf:{title:T('analyzer.type.etf.title','ETF / Fondos'),icon:'📊',subtitle:T('analyzer.type.etf.subtitle','Analiza costos, dividendos, crecimiento esperado y rendimiento de un ETF o fondo.')},
+    cripto:{title:T('analyzer.type.cripto.title','Criptomonedas'),icon:'🪙',subtitle:T('analyzer.type.cripto.subtitle','Analiza precio, volatilidad, staking y crecimiento esperado de una criptomoneda.')},
     negocios:{title:T('analyzer.type.negocios.title','Negocios / Proyectos'),icon:'💼',subtitle:T('analyzer.type.negocios.subtitle','Evalúa retorno, margen, crecimiento, recuperación de la inversión y riesgo del proyecto.')},
     otra:{title:T('analyzer.type.otra.title','Otra inversión'),icon:'🧩',subtitle:T('analyzer.type.otra.subtitle','Usa un modelo general para estudiar inversiones que no encajan en las categorías anteriores.')}
   });
