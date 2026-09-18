@@ -735,5 +735,8 @@
   "analyzer.eval.none": "No staking",
   "analyzer.challenge.cripto.title": "Trend hunter",
   "analyzer.challenge.cripto.desc": "Find a crypto with a good cushion above your minimum expected return (>30%) and volatility of 7/10 or less.",
-  "analyzer.compare.default.cripto": "Bitcoin"
+  "analyzer.compare.default.cripto": "Bitcoin",
+  "analyzer.landing.title": "What do you want to analyze today?",
+  "analyzer.landing.subtitle": "Choose the investment type to see the form and indicators built for it.",
+  "analyzer.summary.ownReturnNA": "Not applicable (no own capital)"
 }

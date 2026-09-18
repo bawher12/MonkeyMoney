@@ -272,9 +272,13 @@ function updateDashboard({initial,gain,divs,expected,horizon,points,metrics,reas
   $('returnPct').textContent=pct(expected); $('gain').textContent=money(gain); $('totalReturn').textContent=pct((initial+gain+divs)/initial-1); $('horizonLabel').textContent=horizon; $('totalYears').textContent=horizon; $('initialText').textContent=money(initial); $('finalText').textContent=money(initial+gain); $('yearsText').textContent=horizon; $('projRate').textContent=pct(expected); $('sInitial').textContent=money(initial); $('sGain').textContent=money(gain); $('sDiv').textContent=money(divs); $('sFinal').textContent=money(initial+gain+divs); $('sTotal').textContent=pct((initial+gain+divs)/initial-1); $('sYears').textContent=horizon;
   const ownRow=$('sOwnReturnRow');
   if(loan.active){
-    const ownCapital=Math.max(1,initial-loan.amount);
-    const ownReturn=(gain+divs)/ownCapital;
-    $('sOwnReturn').textContent=pct(ownReturn);
+    const realOwnCapital=initial-loan.amount;
+    if(realOwnCapital<=0){
+      $('sOwnReturn').textContent=T('analyzer.summary.ownReturnNA','No aplica (sin capital propio)');
+    } else {
+      const ownReturn=(gain+divs)/realOwnCapital;
+      $('sOwnReturn').textContent=pct(ownReturn);
+    }
     ownRow.style.display='';
   } else {
     ownRow.style.display='none';
@@ -450,7 +454,19 @@ function saveCurrentAnalysis(){
   if(!badges.includes(type)){badges.push(type);saveBadges(badges);newBadge=true}
   showSaveToast(newBadge?T('analyzer.progress.toastBadge','¡Guardado! Desbloqueaste una insignia nueva 🏅'):T('analyzer.progress.toastSaved','Análisis guardado ✓'));
 }
-function selectAnalysisType(type){document.querySelectorAll('.analysis-type').forEach(b=>b.classList.toggle('selected',b.dataset.analysisType===type));nav('analiza');setAnalysisForm(type)}
+function selectAnalysisType(type){document.querySelectorAll('.analysis-type').forEach(b=>b.classList.toggle('selected',b.dataset.analysisType===type));nav('analiza');const landing=$('analysisLanding'),formWrap=$('analysisFormWrap');if(landing)landing.style.display='none';if(formWrap)formWrap.style.display='';setAnalysisForm(type)}
+function buildAnalysisLanding(){
+  const g=$('landingGrid'); if(!g)return;
+  g.innerHTML=BADGE_ORDER.map(t=>{const c=TYPE[t];return `<button type="button" class="landing-card" data-analysis-type="${t}"><span class="landing-card-icon">${c.icon}</span><b>${c.title}</b><small>${c.subtitle}</small></button>`}).join('');
+  g.querySelectorAll('.landing-card').forEach(btn=>btn.addEventListener('click',()=>selectAnalysisType(btn.dataset.analysisType)));
+}
+function showAnalysisLanding(){
+  nav('analiza');
+  document.querySelectorAll('.analysis-type').forEach(b=>b.classList.remove('selected'));
+  const landing=$('analysisLanding'),formWrap=$('analysisFormWrap');
+  if(landing)landing.style.display='';
+  if(formWrap)formWrap.style.display='none';
+}
 function buildCompare(){const g=$('compareGrid');const invLabel=T('analyzer.compare.cardtitle','Inversión');const defNames=[T('analyzer.compare.default.acciones','Ecopetrol'),T('analyzer.compare.default.cdt','CDT'),T('analyzer.compare.default.etf','ETF')];g.innerHTML=['A','B','C'].map((x,i)=>`<div class="compare-card"><h3>${invLabel} ${x}</h3><label>${T('analyzer.compare.name','Nombre')} <input data-cmp="name${i}" value="${defNames[i]||''}"></label><label>${T('analyzer.compare.return','Rentabilidad anual')} <input data-cmp="ret${i}" type="number" value="${i===0?13.8:i===1?9:11}" step="0.1">%</label><label>${T('analyzer.compare.risk','Riesgo (1-10)')} <input data-cmp="risk${i}" type="number" min="1" max="10" value="${i+3}"></label><label>${T('analyzer.compare.liquidity','Liquidez (1-10)')} <input data-cmp="liq${i}" type="number" min="1" max="10" value="${10-i*2}"></label><label>${T('analyzer.compare.horizon','Horizonte (años)')} <input data-cmp="hor${i}" type="number" min="1" value="5"></label><div class="compare-result"><span class="state-chip chip-neutral" data-cmpout="${i}">${T('analyzer.kind.neutral','REGULAR')}</span><b data-cmpscore="${i}">${T('analyzer.compare.score','Puntaje')} 0/100</b></div></div>`).join('');g.dataset.ready='1';g.querySelectorAll('input').forEach(i=>i.addEventListener('input',scoreCompare));scoreCompare()}
 function scoreCompare(){
   let bestScore=0;
@@ -493,6 +509,7 @@ function refreshDynamicContent(){
     otra:{title:T('analyzer.type.otra.title','Otra inversión'),icon:'🧩',subtitle:T('analyzer.type.otra.subtitle','Usa un modelo general para estudiar inversiones que no encajan en las categorías anteriores.')}
   });
   setAnalysisForm(activeType);
+  buildAnalysisLanding();
   if($('compareGrid')?.dataset.ready) buildCompare();
   buildGlossary($('glossarySearch')?.value||'');
   calcWhatIf();
@@ -520,7 +537,7 @@ function applyMode(){
 }
 
 function wire(){
-  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.analysisType) selectAnalysisType(b.dataset.analysisType); else nav(b.dataset.page); }));
+  document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.analysisType) selectAnalysisType(b.dataset.analysisType); else if(b.dataset.page==='analiza') showAnalysisLanding(); else nav(b.dataset.page); }));
   $('glossarySearch')?.addEventListener('input',e=>buildGlossary(e.target.value));
   $('loanNo').onclick=()=>{$('loanNo').classList.add('active');$('loanYes').classList.remove('active');calc()};
   $('loanYes').onclick=()=>{
@@ -555,6 +572,7 @@ function wire(){
     $('toggleDetailsBtn').textContent=expanded?T('analyzer.simple.showDetails','Ver detalles técnicos ▾'):T('analyzer.simple.hideDetails','Ocultar detalles técnicos ▴');
   });
   applyMode();
+  buildAnalysisLanding();
   setupDark(); setupMobileMenu(); selectAnalysisType('acciones'); calcWhatIf(); buildGlossary('');
 }
 wire();

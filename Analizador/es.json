@@ -735,5 +735,8 @@
   "analyzer.eval.none": "Sin staking",
   "analyzer.challenge.cripto.title": "Cazador de tendencias",
   "analyzer.challenge.cripto.desc": "Encuentra una cripto con buen colchón sobre tu mínimo esperado (>30%) y volatilidad de 7/10 o menos.",
-  "analyzer.compare.default.cripto": "Bitcoin"
+  "analyzer.compare.default.cripto": "Bitcoin",
+  "analyzer.landing.title": "¿Qué quieres analizar hoy?",
+  "analyzer.landing.subtitle": "Elige el tipo de inversión para ver el formulario e indicadores pensados para ella.",
+  "analyzer.summary.ownReturnNA": "No aplica (sin capital propio)"
 }
