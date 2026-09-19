@@ -739,11 +739,5 @@
   "analyzer.landing.title": "What do you want to analyze today?",
   "analyzer.landing.subtitle": "Choose the investment type to see the form and indicators built for it.",
   "analyzer.summary.ownReturnNA": "Not applicable (no own capital)"
-     "nav": { "news": "Noticias" },
-   "news": {
-     "eyebrow": "Al minuto",
-     "title": "Noticias financieras de tu país",
-     "lead": "Detectamos tu país automáticamente y te mostramos lo último en economía y finanzas.",
-     "loading": "Cargando noticias de tu país..."
    }
-}
+
